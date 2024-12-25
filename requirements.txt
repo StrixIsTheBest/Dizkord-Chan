@@ -1,0 +1,7 @@
+discord.py
+requests
+aiohttp
+asyncio
+python-dotenv
+Flask
+werkzeug
