@@ -1,17 +1,18 @@
-from flask import Flask # Make sure to install the flask package
+from flask import Flask  # Make sure to install the Flask package
 from threading import Thread
 
 app = Flask('')
 
-@app.route('/') # The "main" page of the website. The root.
+@app.route('/')  # The "main" page of the website. The root.
 def home():
-  return "Webserver OK, Discord Bot OK"
+    return "Webserver OK, Discord Bot OK"  # Message shown when the web server is accessed
 
 def run():
-  app.run(host="0.0.0.0", port=8080)
+    # Run the Flask app with threading enabled for efficient request handling
+    app.run(host="0.0.0.0", port=8080, threaded=True)
 
 def keep_alive():
-  t = Thread(target=run) # We use threading so the function doesn't block the discord client from running.
-  t.start()
-
-# It's pretty simple, create a simple webserver using Flask so replit gives you a URL to use, when starting the webserver use threading so it doesn't block the rest of the code from running.
+    # Start the web server in a separate thread to avoid blocking
+    t = Thread(target=run)
+    t.daemon = True  # Ensures the thread is killed when the main program exits
+    t.start()
