@@ -3,9 +3,11 @@ import requests
 from discord.ext import commands
 import random
 from datetime import datetime
+import time
 
 bot = commands.Bot(command_prefix='%')
 user_birthday = {}
+start_time = time.time()
 
 async def meme(ctx):
     meme_url = get_meme()
@@ -70,10 +72,6 @@ async def rps(ctx, choice):
         result = f"You lose! {bot_choice} beats {choice}."
     await ctx.send(result)
 
-import time
-
-start_time = time.time()
-
 @bot.command(name="uptime")
 async def uptime(ctx):
     uptime = time.time() - start_time
@@ -108,7 +106,7 @@ async def birthday(ctx, date: str):
     except ValueError:
         await ctx.send("Please use the format YYYY-MM-DD for your birthday.")
 
-@bot.command(name="upolladd")
+@bot.command(name="polladd")
 async def polladd(ctx, question: str, *options):
     if len(options) < 2:
         await ctx.send("Please provide at least two options.")
