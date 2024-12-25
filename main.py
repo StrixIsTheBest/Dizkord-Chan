@@ -324,6 +324,7 @@ async def on_interaction(interaction: discord.Interaction):
         embed.add_field(name="🔓 `%unban <user>`", value="Unbans a user.", inline=False)
         embed.add_field(name="👮‍♀️👮‍♂️ `%jail <user>`", value="Jails a user.", inline=False)
         embed.add_field(name="🕊 `%release <user>`", value="Releases a user.", inline=False)
+        embed.add_field(name="📊 `%polladd [question] [option1] [option2] ...`", value="Create a poll with multiple options.", inline=False)
         await interaction.response.edit_message(embed=embed)
 
     elif interaction.data["custom_id"] == "fun":
@@ -341,6 +342,11 @@ async def on_interaction(interaction: discord.Interaction):
         embed.add_field(name="🤗 `%hug <user>`", value="Hugs a user lovingly.", inline=False)
         embed.add_field(name="👋 `%slap <user>`", value="Slaps a user playfully.", inline=False)
         embed.add_field(name="💃 `%dance`", value="Let's dance! 💃🕺.", inline=False)
+        embed.add_field(name="😹 `%meme`", value="Sends a random meme.", inline=False)
+        embed.add_field(name="🐱 `%cat`", value="Sends a random cat image.", inline=False)
+        embed.add_field(name="🐶 `%dog`", value="Sends a random dog image.", inline=False)
+        embed.add_field(name="🎱 `%8ball [question]`", value="Ask the bot a yes/no question, and get a random answer.", inline=False)
+        embed.add_field(name="🖖 `%rps [rock/paper/scissors]`", value="Play a game of Rock-Paper-Scissors.", inline=False)
         await interaction.response.edit_message(embed=embed)
 
     elif interaction.data["custom_id"] == "utility":
@@ -351,6 +357,11 @@ async def on_interaction(interaction: discord.Interaction):
         )
         embed.add_field(name="❤️ `%love`", value="Sends a heartful message of love.", inline=False)
         embed.add_field(name="🧹 `%purge <number>`", value="Deletes a specified number of messages.", inline=False)
+        embed.add_field(name="⏱ `%uptime`", value="Shows the bot’s uptime in minutes and seconds.", inline=False)
+        embed.add_field(name="📊 `%serverinfo`", value="Displays information about the server.", inline=False)
+        embed.add_field(name="🏓 `%ping`", value="Check the bot’s ping (latency).", inline=False)
+        embed.add_field(name="👤 `%userinfo [@user]`", value="Displays information about the user (default is the author).", inline=False)
+        embed.add_field(name="🎂 `%birthday [YYYY-MM-DD]`", value="Set and store your birthday (for future notifications).", inline=False)
         await interaction.response.edit_message(embed=embed)
 
 # Custom help command
