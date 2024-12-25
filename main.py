@@ -5,6 +5,7 @@ import random
 import os
 from bot.webserver import keep_alive
 from bot.quote import start_quote_task
+from bot.commands import *
 
 # Bot setup
 intents = discord.Intents.default()
