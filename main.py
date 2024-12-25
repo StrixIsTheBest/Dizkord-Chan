@@ -5,7 +5,6 @@ import random
 import os
 from bot.webserver import keep_alive
 from bot.quote import start_quote_task
-from dependencies.utils.private import DISCORD
 
 # Bot setup
 intents = discord.Intents.default()
@@ -577,4 +576,4 @@ async def dance(ctx):
 keep_alive()
 
 # Run the bot
-bot.run(DISCORD["TOKEN"])
+bot.run(os.getenv("DISCORD_TOKEN"))
