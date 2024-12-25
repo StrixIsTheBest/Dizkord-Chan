@@ -8,6 +8,7 @@ import requests
 import json
 from pytz import timezone
 from datetime import datetime
+from bot.webserver import keep_alive
 from bot.quote import start_quote_task
 from dotenv import load_dotenv
 
@@ -870,6 +871,9 @@ async def polladd(ctx, question: str, *options):
     # Add reactions to the message
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
+        
+# Keep Alive
+keep_alive()
 
 # Run the bot
 bot.run(DISCORD_TOKEN)
