@@ -1,11 +1,15 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ui import View, Button
+import time
 import random
 import os
+import requests
+import json
+from pytz import timezone
+from datetime import datetime
 from bot.webserver import keep_alive
 from bot.quote import start_quote_task
-from bot.commands import *
 from dotenv import load_dotenv
 
 # Bot setup
@@ -19,6 +23,62 @@ load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix="%", intents=intents)
 channel_id = 1321034348669173811
+
+BIRTHDAY_FILE = "birthdays.json"
+DUBAI_TIMEZONE = timezone("Asia/Dubai")
+
+def load_birthdays():
+    if os.path.exists(BIRTHDAY_FILE):
+        try:
+            with open(BIRTHDAY_FILE, "r") as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return {}
+    else:
+        return {}
+
+# Save birthdays to file
+def save_birthdays(birthdays):
+    try:
+        with open(BIRTHDAY_FILE, "w") as file:
+            json.dump(birthdays, file)
+    except Exception as e:
+        print(f"Error saving birthdays to file: {e}")
+
+# Task to check birthdays every 24 hours
+@tasks.loop(hours=24)  # Check daily
+async def check_birthdays():
+    # Always load the latest birthdays from the file before checking
+    user_birthday = load_birthdays()
+    
+    now = datetime.now(DUBAI_TIMEZONE)
+    today = now.strftime("%m-%d")
+
+    if not user_birthday:
+        return  # No birthdays to check
+
+    for user_id, date in user_birthday.items():
+        # Check if the date matches today
+        if datetime.strptime(date, "%Y-%m-%d").strftime("%m-%d") == today:
+            try:
+                # Fetch user from Discord
+                user = await bot.fetch_user(int(user_id))
+                if user:
+                    await user.send(f"🎂 Happy Birthday, {user.mention}! 🥳🎉 Hope you have an amazing day! 🎁🎈")
+            except Exception as e:
+                print(f"Error sending birthday wish to user {user_id}: {e}")
+
+# Command to set birthday
+@bot.command(name="birthday")
+async def birthday(ctx, date: str):
+    try:
+        birthday = datetime.strptime(date, "%Y-%m-%d")
+        user_birthday = load_birthdays()  # Always load latest birthdays from file
+        user_birthday[str(ctx.author.id)] = birthday.strftime("%Y-%m-%d")
+        save_birthdays(user_birthday)  # Save birthdays after setting a new one
+        await ctx.send(f"🎉 Your birthday is set to {birthday.strftime('%B %d, %Y')}!")
+    except ValueError:
+        await ctx.send("Please use the format YYYY-MM-DD for your birthday.")
 
 class CommandsView(View):
     def __init__(self):
@@ -81,6 +141,7 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
     start_quote_task(bot, channel_id)
+    check_birthdays.start()
     
 # Event: Welcome a new user
 @bot.event
@@ -586,6 +647,230 @@ async def dance(ctx):
 
     # Send the embed
     await ctx.send(embed=embed)
+
+# NEW COMMANDS
+user_birthday = {}
+start_time = time.time()
+
+def get_meme():
+    response = requests.get("https://api.imgflip.com/get_memes")
+    if response.status_code == 200:
+        meme_data = response.json()
+        meme_list = meme_data['data']['memes']
+        # Randomly choose a meme from the list
+        selected_meme = random.choice(meme_list)
+        meme_url = selected_meme['url']
+        return meme_url
+    else:
+        return "Could not fetch meme."
+
+API_KEY = "live_nUG00cmyCRW9ppf5zWojQr2E8IZhhOYwvBiV4nQIzZ8p1uO9f5S0McGAxm6v8edX"
+headers = {
+    "x-api-key": API_KEY
+}
+
+@bot.command()
+async def cat(ctx):
+    """Fetch a random cat image from The Cat API."""
+    url = "https://api.thecatapi.com/v1/images/search"  # The Cat API endpoint
+    
+    try:
+        # Get a random cat image from The Cat API
+        response = requests.get(url, headers=headers)
+        
+        # Check if the response is successful
+        if response.status_code == 200:
+            cat_data = response.json()  # Parse the JSON response
+            cat_image_url = cat_data[0]['url']  # Extract the image URL
+            await ctx.send(cat_image_url)  # Send the cat image URL in the chat
+        else:
+            await ctx.send("Sorry, I couldn't fetch a cat image at the moment.")
+    
+    except Exception as e:
+        await ctx.send(f"An error occurred: {e}")
+
+def get_dog():
+    response = requests.get("https://random.dog/woof.json")
+    if response.status_code == 200:
+        dog_data = response.json()
+        dog_url = dog_data['url']
+        return dog_url
+    else:
+        return "Could not fetch dog image."
+
+@bot.command(name="meme")
+async def meme(ctx):
+    meme_url = get_meme()
+    await ctx.send(meme_url)
+
+@bot.command(name="dog")
+async def dog(ctx):
+    dog_url = get_dog()
+    await ctx.send(dog_url)
+
+@bot.command(name="8ball")
+async def _8ball(ctx, *, question):
+    responses = [
+        '✨ Yes! ✨', '💔 No 💔', '💭 Maybe... 💭', '⭐ Definitely! ⭐', 
+        '😕 Not likely...', '🔮 Ask again later 🔮', '❌ Definitely not! ❌'
+    ]
+    
+    answer = random.choice(responses)
+
+    # Create a cute embed with a magical theme
+    embed = discord.Embed(
+        title="🔮 Magic 8-Ball ✨",
+        description=f"**Question:** {question}\n**Answer:** {answer}",
+        color=discord.Color.blue()  # A soft blue color to keep it calming
+    )
+
+    # Add some kawaii flair in the footer
+    embed.set_footer(text="✨ Ask another question? ✨")
+
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="rps")
+async def rps(ctx, choice):
+    choices = ['rock', 'paper', 'scissors']
+    bot_choice = random.choice(choices)
+
+    if choice not in choices:
+        await ctx.send("💭 Hmm, that's not an option! Please choose 'rock', 'paper', or 'scissors'. ✋")
+        return
+
+    if choice == bot_choice:
+        result = f"✨ It's a tie! Both chose {choice}! ✨"
+    elif (choice == 'rock' and bot_choice == 'scissors') or (choice == 'paper' and bot_choice == 'rock') or (choice == 'scissors' and bot_choice == 'paper'):
+        result = f"🎉 You win! {choice.capitalize()} beats {bot_choice.capitalize()}! 🎉"
+    else:
+        result = f"😭 You lose! {bot_choice.capitalize()} beats {choice.capitalize()}... Better luck next time! 😭"
+
+    # Create a cute embed for the result
+    embed = discord.Embed(
+        title="✂️ Rock, Paper, Scissors! ✋",
+        description=result,
+        color=discord.Color.purple()  # Soft purple color to keep it cute
+    )
+
+    # Add some kawaii touch to the footer
+    embed.set_footer(text="Play again? 💖")
+
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="uptime")
+async def uptime(ctx):
+    uptime = time.time() - start_time
+    minutes = uptime // 60
+    seconds = uptime % 60
+
+    # Create a cute embed for uptime display
+    embed = discord.Embed(
+        title="⏰ Bot Uptime! ⏰",
+        description=f"**The bot has been running for**\n{int(minutes)} minutes and {int(seconds)} seconds! ✨",
+        color=discord.Color.pink()  # Kawaii pink color for the cute vibe
+    )
+    
+    # Add a footer to add some charm
+    embed.set_footer(text="Thank you for being with us! 💕")
+
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="serverinfo")
+async def serverinfo(ctx):
+    guild = ctx.guild
+
+    # Create an embed with cute styling
+    embed = discord.Embed(
+        title=f"🌸 {guild.name} Server Info 🌸", 
+        description=f"Here's some info about the **{guild.name}** server! 🥳💖",
+        color=discord.Color.purple()  # Cute purple color
+    )
+    
+    # Add fields to the embed
+    embed.add_field(name="💖 Server Name", value=guild.name, inline=False)
+    embed.add_field(name="👥 Total Members", value=guild.member_count, inline=False)
+    embed.add_field(name="🔒 Verification Level", value=guild.verification_level, inline=False)
+    embed.add_field(name="💎 Premium Tier", value=guild.premium_tier, inline=False)
+    
+    # Add a footer with an extra cute message
+    embed.set_footer(text="Stay cute and enjoy your time on the server! 💕")
+    
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="ping")
+async def ping(ctx):
+    latency = round(bot.latency * 1000)
+
+    # Create an embed with a cute style
+    embed = discord.Embed(
+        title="🏓 Ping Pong! 🏓", 
+        description=f"**Pong!** 🥳💫",
+        color=discord.Color.pink()  # Cute pink color
+    )
+    
+    # Add the latency field to the embed
+    embed.add_field(name="⏱️ Latency", value=f"{latency}ms", inline=False)
+    
+    # Add a footer with a cute message
+    embed.set_footer(text="Stay cute while we ping! 💖")
+    
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="userinfo")
+async def userinfo(ctx, member: discord.Member = None):
+    if member is None:
+        member = ctx.author
+    
+    # Create an embed with a cute style
+    embed = discord.Embed(
+        title=f"🌸 {member.name}'s Info 🌸", 
+        description=f"Here's the info for **{member.name}**! 🥰",
+        color=discord.Color.blue()  # Soft blue color for a gentle vibe
+    )
+    
+    # Add user information fields
+    embed.add_field(name="👤 User Name", value=member.name, inline=False)
+    embed.add_field(name="📅 Joined at", value=member.joined_at.strftime("%B %d, %Y"), inline=False)
+    embed.add_field(name="🆔 User ID", value=member.id, inline=False)
+    
+    # Add a cute footer message
+    embed.set_footer(text="Sending you cute info! 💖✨")
+    
+    # Send the embed message
+    await ctx.send(embed=embed)
+
+@bot.command(name="polladd")
+async def polladd(ctx, question: str, *options):
+    if len(options) < 2:
+        await ctx.send("Please provide at least two options. 💡")
+        return
+
+    # Create a cute, colorful embed for the poll
+    embed = discord.Embed(
+        title="📝 New Poll! 📝",
+        description=f"**{question}**\n",
+        color=discord.Color.purple()  # Soft purple for a fun vibe
+    )
+
+    # Add the options to the embed
+    reactions = ['🇦', '🇧', '🇨', '🇩', '🇪']
+    for i, option in enumerate(options):
+        embed.add_field(name=f"{reactions[i]} Option {i+1}", value=option, inline=False)
+
+    # Add a footer to encourage voting
+    embed.set_footer(text="Vote with the reactions below! 💖")
+
+    # Send the embed message
+    message = await ctx.send(embed=embed)
+
+    # Add reactions to the message
+    for i in range(len(options)):
+        await message.add_reaction(reactions[i])
 
 #keep alive
 keep_alive()
