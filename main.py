@@ -6,6 +6,7 @@ import os
 from bot.webserver import keep_alive
 from bot.quote import start_quote_task
 from bot.commands import *
+from dotenv import load_dotenv
 
 # Bot setup
 intents = discord.Intents.default()
@@ -14,6 +15,8 @@ intents.messages = True
 intents.guilds = True
 intents.members = True  # Required for welcome/goodbye messages
 
+load_dotenv()
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix="%", intents=intents)
 channel_id = 1321034348669173811
 
@@ -588,4 +591,4 @@ async def dance(ctx):
 keep_alive()
 
 # Run the bot
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run(DISCORD_TOKEN)
