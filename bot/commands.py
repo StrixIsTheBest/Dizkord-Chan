@@ -5,7 +5,6 @@ import random
 from datetime import datetime
 import time
 
-bot = commands.Bot(command_prefix='%')
 user_birthday = {}
 start_time = time.time()
 
