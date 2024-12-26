@@ -901,16 +901,11 @@ async def polladd(ctx, question: str, *options):
 @bot.tree.command(name="quote", description="Get a random anime quote.")
 async def quote(interaction: discord.Interaction):
     quote_data = get_random_quote()
-    quote = quote_data["quote"]
-    character = quote_data["character"]
-    anime = quote_data["anime"]
-
     embed = discord.Embed(
         title="🎬 Random Anime Quote 🎬",
-        description=f"\"{quote}\"\n- {character}, *{anime}*",
+        description=f"\"{quote_data['quote']}\"\n- {quote_data['character']}, *{quote_data['anime']}*",
         color=discord.Color.blue()
     )
-
     await interaction.response.send_message(embed=embed)
         
 # Keep Alive
