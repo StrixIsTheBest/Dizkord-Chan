@@ -12,38 +12,6 @@ from bot.webserver import keep_alive
 from bot.quote import start_quote_task
 from dotenv import load_dotenv
 from discord import app_commands
-
-# Function to fetch a random quote from the Anime-chan API
-def get_random_quote():
-    response = requests.get("https://animechan.xyz/api/random")
-    if response.status_code == 200:
-        data = response.json()
-        return {
-            "quote": data.get("quote", "No quote available"),
-            "character": data.get("character", "Unknown character"),
-            "anime": data.get("anime", "Unknown anime")
-        }
-    else:
-        return {
-            "quote": "No quote available",
-            "character": "Unknown character",
-            "anime": "Unknown anime"
-        }
-
-@bot.tree.command(name="quote", description="Get a random anime quote.")
-async def quote(interaction: discord.Interaction):
-    quote_data = get_random_quote()
-    quote = quote_data["quote"]
-    character = quote_data["character"]
-    anime = quote_data["anime"]
-
-    embed = discord.Embed(
-        title="🎬 Random Anime Quote 🎬",
-        description=f"\"{quote}\"\n- {character}, *{anime}*",
-        color=discord.Color.blue()
-    )
-
-    await interaction.response.send_message(embed=embed)
     
 # Bot setup
 intents = discord.Intents.default()
@@ -59,6 +27,37 @@ channel_id = 1321034348669173811
 
 BIRTHDAY_FILE = "birthdays.json"
 DUBAI_TIMEZONE = timezone("Asia/Dubai")
+
+def get_random_quote():
+    response = requests.get("https://animechan.xyz/api/random")
+    if response.status_code == 200:
+        data = response.json()
+        return {
+            "quote": data.get("quote", "No quote available"),
+            "character": data.get("character", "Unknown character"),
+            "anime": data.get("anime", "Unknown anime")
+        }
+    else:
+        return {
+            "quote": "No quote available",
+            "character": "Unknown character",
+            "anime": "Unknown anime"
+        }
+        
+@bot.tree.command(name="quote", description="Get a random anime quote.")
+async def quote(interaction: discord.Interaction):
+    quote_data = get_random_quote()
+    quote = quote_data["quote"]
+    character = quote_data["character"]
+    anime = quote_data["anime"]
+
+    embed = discord.Embed(
+        title="🎬 Random Anime Quote 🎬",
+        description=f"\"{quote}\"\n- {character}, *{anime}*",
+        color=discord.Color.blue()
+    )
+
+    await interaction.response.send_message(embed=embed)
 
 def load_birthdays():
     if os.path.exists(BIRTHDAY_FILE):
