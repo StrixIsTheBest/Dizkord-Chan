@@ -160,6 +160,7 @@ tease_phrases = [
 # Event: Bot is ready
 @bot.event
 async def on_ready():
+    await bot.tree.sync()
     print(f"{bot.user.name} is now online and ready to assist! 🌸 UwU")
     activity = discord.Game(name="Helping you, senpai~ 💖")
     await bot.change_presence(status=discord.Status.online, activity=activity)
