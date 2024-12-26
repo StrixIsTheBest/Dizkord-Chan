@@ -12,6 +12,30 @@ from bot.webserver import keep_alive
 from bot.quote import start_quote_task
 from dotenv import load_dotenv
 
+# Function to fetch a random quote from the Anime-chan API
+def get_random_quote():
+    try:
+        response = requests.get("https://animechan.io/api/v1/quotes/random")
+        data = response.json()
+
+        # Extract quote, character, and anime details
+        quote = data["quote"]
+        character = data["character"]
+        anime = data["anime"]
+
+        return {
+            "quote": quote,
+            "character": character,
+            "anime": anime
+        }
+    except Exception as e:
+        print(f"Error fetching quote: {e}")
+        return {
+            "quote": "No quote available",
+            "character": "Unknown character",
+            "anime": "Unknown anime"
+        }
+        
 # Bot setup
 intents = discord.Intents.default()
 intents.message_content = True
@@ -871,6 +895,21 @@ async def polladd(ctx, question: str, *options):
     # Add reactions to the message
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
+
+@bot.command(name="quote")
+async def quote(ctx):
+    quote_data = get_random_quote()
+    quote = quote_data["quote"]
+    character = quote_data["character"]
+    anime = quote_data["anime"]
+
+    embed = discord.Embed(
+        title="🎬 Random Anime Quote 🎬",
+        description=f"\"{quote}\"\n- {character}, *{anime}*",
+        color=discord.Color.blue()
+    )
+
+    await ctx.send(embed=embed)
         
 # Keep Alive
 keep_alive()
