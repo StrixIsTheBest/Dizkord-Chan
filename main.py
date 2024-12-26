@@ -29,7 +29,22 @@ def get_random_quote():
             "character": "Unknown character",
             "anime": "Unknown anime"
         }
-        
+
+@bot.tree.command(name="quote", description="Get a random anime quote.")
+async def quote(interaction: discord.Interaction):
+    quote_data = get_random_quote()
+    quote = quote_data["quote"]
+    character = quote_data["character"]
+    anime = quote_data["anime"]
+
+    embed = discord.Embed(
+        title="🎬 Random Anime Quote 🎬",
+        description=f"\"{quote}\"\n- {character}, *{anime}*",
+        color=discord.Color.blue()
+    )
+
+    await interaction.response.send_message(embed=embed)
+    
 # Bot setup
 intents = discord.Intents.default()
 intents.message_content = True
@@ -890,21 +905,6 @@ async def polladd(ctx, question: str, *options):
     # Add reactions to the message
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
-
-@bot.tree.command(name="quote", description="Get a random anime quote.")
-async def quote(interaction: discord.Interaction):
-    quote_data = get_random_quote()
-    quote = quote_data["quote"]
-    character = quote_data["character"]
-    anime = quote_data["anime"]
-
-    embed = discord.Embed(
-        title="🎬 Random Anime Quote 🎬",
-        description=f"\"{quote}\"\n- {character}, *{anime}*",
-        color=discord.Color.blue()
-    )
-
-    await interaction.response.send_message(embed=embed)
         
 # Keep Alive
 keep_alive()
