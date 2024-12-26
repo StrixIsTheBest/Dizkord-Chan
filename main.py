@@ -30,7 +30,7 @@ DUBAI_TIMEZONE = timezone("Asia/Dubai")
 
 @bot.tree.command(name="quote", description="Get a random anime quote.")
 async def quote(interaction: discord.Interaction):
-    response = requests.get("https://animechan.xyz/api/random")
+    response = requests.get("https://animechan.io/api/v1/quotes/random")
     if response.status_code == 200:
         data = response.json()
         quote = data.get("quote", "No quote available")
