@@ -2,7 +2,7 @@ import discord
 import requests
 from discord.ext import tasks
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime
 import asyncio
 
 # Function to fetch a random quote from the Anime-chan API
@@ -12,11 +12,14 @@ def get_random_quote():
     try:
         # Parse the JSON response
         data = response.json()
-
-        if data["status"] == "success" and "data" in data:
-            quote = data["data"]["content"]
-            author = data["data"]["character"]["name"]
-            anime = data["data"]["anime"]["name"]
+        
+        # Check if the response contains the necessary data
+        if data.get("status") == "success" and "data" in data:
+            quote_data = data["data"]
+            
+            quote = quote_data.get("content", "No quote available")
+            author = quote_data["character"].get("name", "Unknown character")
+            anime = quote_data["anime"].get("name", "Unknown anime")
 
             return {
                 "quote": quote,
@@ -24,13 +27,16 @@ def get_random_quote():
                 "anime": anime
             }
         else:
+            # Log the response if it's not as expected for debugging purposes
+            print(f"Unexpected API response: {data}")
             return {
                 "quote": "No quote available",
                 "author": "Unknown character",
                 "anime": "Unknown anime"
             }
     except Exception as e:
-        print(f"Error: {e}")
+        # Log any error that occurs during the API call
+        print(f"Error fetching quote: {e}")
         return {
             "quote": "No quote available",
             "author": "Unknown character",
