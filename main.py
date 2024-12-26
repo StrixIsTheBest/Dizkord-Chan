@@ -11,6 +11,7 @@ from datetime import datetime
 from bot.webserver import keep_alive
 from bot.quote import start_quote_task
 from dotenv import load_dotenv
+from discord import app_commands
 
 # Function to fetch a random quote from the Anime-chan API
 def get_random_quote():
