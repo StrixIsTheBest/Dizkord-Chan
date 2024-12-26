@@ -896,8 +896,8 @@ async def polladd(ctx, question: str, *options):
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
 
-@bot.command(name="quote")
-async def quote(ctx):
+@bot.tree.command(name="quote", description="Get a random anime quote.")
+async def quote(interaction: discord.Interaction):
     quote_data = get_random_quote()
     quote = quote_data["quote"]
     character = quote_data["character"]
@@ -909,7 +909,7 @@ async def quote(ctx):
         color=discord.Color.blue()
     )
 
-    await ctx.send(embed=embed)
+    await interaction.response.send_message(embed=embed)
         
 # Keep Alive
 keep_alive()
