@@ -15,22 +15,15 @@ from discord import app_commands
 
 # Function to fetch a random quote from the Anime-chan API
 def get_random_quote():
-    try:
-        response = requests.get("https://animechan.io/api/v1/quotes/random")
+    response = requests.get("https://animechan.xyz/api/random")
+    if response.status_code == 200:
         data = response.json()
-
-        # Extract quote, character, and anime details
-        quote = data["quote"]
-        character = data["character"]
-        anime = data["anime"]
-
         return {
-            "quote": quote,
-            "character": character,
-            "anime": anime
+            "quote": data.get("quote", "No quote available"),
+            "character": data.get("character", "Unknown character"),
+            "anime": data.get("anime", "Unknown anime")
         }
-    except Exception as e:
-        print(f"Error fetching quote: {e}")
+    else:
         return {
             "quote": "No quote available",
             "character": "Unknown character",
