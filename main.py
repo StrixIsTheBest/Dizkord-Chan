@@ -28,28 +28,18 @@ channel_id = 1321034348669173811
 BIRTHDAY_FILE = "birthdays.json"
 DUBAI_TIMEZONE = timezone("Asia/Dubai")
 
-def get_random_quote():
+@bot.tree.command(name="quote", description="Get a random anime quote.")
+async def quote(interaction: discord.Interaction):
     response = requests.get("https://animechan.xyz/api/random")
     if response.status_code == 200:
         data = response.json()
-        return {
-            "quote": data.get("quote", "No quote available"),
-            "character": data.get("character", "Unknown character"),
-            "anime": data.get("anime", "Unknown anime")
-        }
+        quote = data.get("quote", "No quote available")
+        character = data.get("character", "Unknown character")
+        anime = data.get("anime", "Unknown anime")
     else:
-        return {
-            "quote": "No quote available",
-            "character": "Unknown character",
-            "anime": "Unknown anime"
-        }
-        
-@bot.tree.command(name="quote", description="Get a random anime quote.")
-async def quote(interaction: discord.Interaction):
-    quote_data = get_random_quote()
-    quote = quote_data["quote"]
-    character = quote_data["character"]
-    anime = quote_data["anime"]
+        quote = "No quote available"
+        character = "Unknown character"
+        anime = "Unknown anime"
 
     embed = discord.Embed(
         title="🎬 Random Anime Quote 🎬",
