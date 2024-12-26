@@ -6,12 +6,12 @@ import random
 import os
 import requests
 import json
+import asyncio
 from pytz import timezone
 from datetime import datetime
-from bot.webserver import keep_alive
-from bot.quote import start_quote_task
+import bots.webserver
+from bots.quote import start_quote_task
 from dotenv import load_dotenv
-from discord import app_commands
     
 # Bot setup
 intents = discord.Intents.default()
@@ -28,26 +28,44 @@ channel_id = 1321034348669173811
 BIRTHDAY_FILE = "birthdays.json"
 DUBAI_TIMEZONE = timezone("Asia/Dubai")
 
-@bot.tree.command(name="quote", description="Get a random anime quote.")
-async def quote(interaction: discord.Interaction):
+# Fetching random quote from the new API
+def get_random_quote():
     response = requests.get("https://animechan.io/api/v1/quotes/random")
     if response.status_code == 200:
         data = response.json()
-        quote = data.get("quote", "No quote available")
-        character = data.get("character", "Unknown character")
-        anime = data.get("anime", "Unknown anime")
+        return {
+            "quote": data["data"].get("content", "No quote available"),
+            "character": data["data"]["character"].get("name", "Unknown character"),
+            "anime": data["data"]["anime"].get("name", "Unknown anime")
+        }
     else:
-        quote = "No quote available"
-        character = "Unknown character"
-        anime = "Unknown anime"
+        return {
+            "quote": "No quote available",
+            "character": "Unknown character",
+            "anime": "Unknown anime"
+        }
 
+# Slash command for /quote
+@bot.tree.command(name="quote", description="Get a random anime quote.")
+async def quote(interaction: discord.Interaction):
+    # Acknowledge the interaction to prevent the 404 error
+    await interaction.response.defer()
+
+    # Fetch random quote
+    quote_data = get_random_quote()
+    quote = quote_data["quote"]
+    character = quote_data["character"]
+    anime = quote_data["anime"]
+
+    # Create the embed
     embed = discord.Embed(
         title="🎬 Random Anime Quote 🎬",
         description=f"\"{quote}\"\n- {character}, *{anime}*",
         color=discord.Color.blue()
     )
 
-    await interaction.response.send_message(embed=embed)
+    # Send the response
+    await interaction.followup.send(embed=embed)
 
 def load_birthdays():
     if os.path.exists(BIRTHDAY_FILE):
@@ -159,10 +177,12 @@ tease_phrases = [
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} is now online and ready to assist! 🌸 UwU")
+    await bot.tree.sync()
     activity = discord.Game(name="Helping you, senpai~ 💖")
     await bot.change_presence(status=discord.Status.online, activity=activity)
     
-    await bot.tree.sync()
+    bot.loop.create_task(bots.webserver.keep_alive())
+    bot.loop.create_task(bots.webserver.ping_bot())
     start_quote_task(bot, channel_id)
     check_birthdays.start()
     
@@ -395,10 +415,61 @@ async def permissions_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("Eep~! You don’t have the permissions to use that command, senpai~ 💔")
 
-#on interaction
+# NEW CMDS
+class PaginationView(View):
+    def __init__(self, pages):
+        super().__init__(timeout=60)  # Optional timeout for pagination buttons
+        self.pages = pages
+        self.page_index = 0  # Start with the first page
+
+    async def update_embed(self, interaction, embed):
+        """Update the embed with the current page content."""
+        embed.description = self.pages[self.page_index]
+        embed.set_footer(text=f"Page {self.page_index + 1}/{len(self.pages)} | Use the buttons below to navigate.")
+        await interaction.response.edit_message(embed=embed)
+
+    @discord.ui.button(label="Previous", style=discord.ButtonStyle.primary)
+    async def previous_page(self, button: discord.ui.Button, interaction: discord.Interaction):
+        """Navigate to the previous page."""
+        embed = interaction.message.embeds[0]  # Get the current embed of the message
+        if self.page_index > 0:
+            self.page_index -= 1
+            await self.update_embed(interaction, embed)
+        else:
+            await interaction.response.send_message("You're already on the first page.", ephemeral=True)
+
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary)
+    async def next_page(self, button: discord.ui.Button, interaction: discord.Interaction):
+        """Navigate to the next page."""
+        embed = interaction.message.embeds[0]  # Get the current embed of the message
+        if self.page_index < len(self.pages) - 1:
+            self.page_index += 1
+            await self.update_embed(interaction, embed)
+        else:
+            await interaction.response.send_message("You're already on the last page.", ephemeral=True)
+
+# Sample content for the fun commands, split into pages
+fun_pages = [
+    "🎉 **Fun Commands - Page 1**\n\n💬 `%say <message>` - Bot repeats your message.\n💌 `%pickupline` - Sends a random pickup line.\n😉 `%tease` - Sends a teasing phrase.\n😏 `%kinky` - Sends a kinky phrase.\n💥 `%spank <user>` - Spanks a user playfully.\n💋 `%kiss <user>` - Sends a sweet kiss.",
+    "🎉 **Fun Commands - Page 2**\n\n🤗 `%hug <user>` - Hugs a user lovingly.\n👋 `%slap <user>` - Slaps a user playfully.\n💃 `%dance` - Let's dance! 💃🕺.\n😹 `%meme` - Sends a random meme.\n🐱 `%cat` - Sends a random cat image.\n🐶 `%dog` - Sends a random dog image.",
+    "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors."
+]
+
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
-    if interaction.data["custom_id"] == "moderation":
+    if interaction.data["custom_id"] == "fun":
+        embed = discord.Embed(
+            title="🎉 Fun Commands",
+            description=fun_pages[0],  # Set the initial page content
+            color=0xFFC0CB
+        )
+        embed.set_footer(text="Page 1/3 | Use the buttons below to navigate.")
+        
+        # Create a view for pagination
+        view = PaginationView(pages=fun_pages)
+        await interaction.response.edit_message(embed=embed, view=view)
+
+    elif interaction.data["custom_id"] == "moderation":
         embed = discord.Embed(
             title="🔨 Moderation Commands",
             description="Commands to manage your server efficiently:",
@@ -412,28 +483,6 @@ async def on_interaction(interaction: discord.Interaction):
         embed.add_field(name="👮‍♀️👮‍♂️ `%jail <user>`", value="Jails a user.", inline=False)
         embed.add_field(name="🕊 `%release <user>`", value="Releases a user.", inline=False)
         embed.add_field(name="📊 `%polladd [question] [option1] [option2] ...`", value="Create a poll with multiple options.", inline=False)
-        await interaction.response.edit_message(embed=embed)
-
-    elif interaction.data["custom_id"] == "fun":
-        embed = discord.Embed(
-            title="🎉 Fun Commands",
-            description="Have fun with these playful commands:",
-            color=0xFFC0CB
-        )
-        embed.add_field(name="💬 `%say <message>`", value="Bot repeats your message.", inline=False)
-        embed.add_field(name="💌 `%pickupline`", value="Sends a random pickup line.", inline=False)
-        embed.add_field(name="😉 `%tease`", value="Sends a teasing phrase.", inline=False)
-        embed.add_field(name="😏 `%kinky`", value="Sends a kinky phrase.", inline=False)
-        embed.add_field(name="💥 `%spank <user>`", value="Spanks a user playfully.", inline=False)
-        embed.add_field(name="💋 `%kiss <user>`", value="Sends a sweet kiss.", inline=False)
-        embed.add_field(name="🤗 `%hug <user>`", value="Hugs a user lovingly.", inline=False)
-        embed.add_field(name="👋 `%slap <user>`", value="Slaps a user playfully.", inline=False)
-        embed.add_field(name="💃 `%dance`", value="Let's dance! 💃🕺.", inline=False)
-        embed.add_field(name="😹 `%meme`", value="Sends a random meme.", inline=False)
-        embed.add_field(name="🐱 `%cat`", value="Sends a random cat image.", inline=False)
-        embed.add_field(name="🐶 `%dog`", value="Sends a random dog image.", inline=False)
-        embed.add_field(name="🎱 `%8ball [question]`", value="Ask the bot a yes/no question, and get a random answer.", inline=False)
-        embed.add_field(name="🖖 `%rps [rock/paper/scissors]`", value="Play a game of Rock-Paper-Scissors.", inline=False)
         await interaction.response.edit_message(embed=embed)
 
     elif interaction.data["custom_id"] == "utility":
@@ -454,16 +503,17 @@ async def on_interaction(interaction: discord.Interaction):
 # Custom help command
 @bot.command()
 async def cmds(ctx):
-        embed = discord.Embed(
-            title="✨ Dizkord-Chan's Cute Commands ✨",
-            description="Choose a category to view commands:",
-            color=0xFFC0CB
-        )
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&")  # Customize with your bot's image URL
-        embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
+    embed = discord.Embed(
+        title="✨ Dizkord-Chan's Cute Commands ✨",
+        description="Choose a category to view commands:",
+        color=0xFFC0CB
+    )
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&")
+    embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
 
-        view = CommandsView()
-        await ctx.send(embed=embed, view=view)
+    # Create a view for the command options
+    view = CommandsView()  # Assuming you have your view created elsewhere
+    await ctx.send(embed=embed, view=view)
 
 # spank    
 @bot.command(name="spank")
@@ -895,8 +945,5 @@ async def polladd(ctx, question: str, *options):
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
         
-# Keep Alive
-keep_alive()
-
 # Run the bot
 bot.run(DISCORD_TOKEN)
