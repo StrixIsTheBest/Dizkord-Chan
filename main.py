@@ -431,7 +431,9 @@ class PaginationView(View):
     @discord.ui.button(label="Previous", style=discord.ButtonStyle.primary)
     async def previous_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """Navigate to the previous page."""
-        embed = interaction.message.embeds[0]  # Get the current embed of the message
+        # Fetch the message object from the interaction
+        message = interaction.message
+        embed = message.embeds[0]  # Get the current embed of the message
         if self.page_index > 0:
             self.page_index -= 1
             await self.update_embed(interaction, embed)
@@ -441,7 +443,9 @@ class PaginationView(View):
     @discord.ui.button(label="Next", style=discord.ButtonStyle.primary)
     async def next_page(self, button: discord.ui.Button, interaction: discord.Interaction):
         """Navigate to the next page."""
-        embed = interaction.message.embeds[0]  # Get the current embed of the message
+        # Fetch the message object from the interaction
+        message = interaction.message
+        embed = message.embeds[0]  # Get the current embed of the message
         if self.page_index < len(self.pages) - 1:
             self.page_index += 1
             await self.update_embed(interaction, embed)
@@ -452,7 +456,7 @@ class PaginationView(View):
 fun_pages = [
     "🎉 **Fun Commands - Page 1**\n\n💬 `%say <message>` - Bot repeats your message.\n💌 `%pickupline` - Sends a random pickup line.\n😉 `%tease` - Sends a teasing phrase.\n😏 `%kinky` - Sends a kinky phrase.\n💥 `%spank <user>` - Spanks a user playfully.\n💋 `%kiss <user>` - Sends a sweet kiss.",
     "🎉 **Fun Commands - Page 2**\n\n🤗 `%hug <user>` - Hugs a user lovingly.\n👋 `%slap <user>` - Slaps a user playfully.\n💃 `%dance` - Let's dance! 💃🕺.\n😹 `%meme` - Sends a random meme.\n🐱 `%cat` - Sends a random cat image.\n🐶 `%dog` - Sends a random dog image.",
-    "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors.\n💬 `/quote` - Get a random quote."
+    "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors."
 ]
 
 @bot.event
