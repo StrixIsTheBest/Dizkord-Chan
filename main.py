@@ -416,95 +416,118 @@ async def permissions_error(ctx, error):
         await ctx.send("Eep~! You don’t have the permissions to use that command, senpai~ 💔")
 
 # NEW CMDS
-class PaginationView(View):
+class PaginationView(discord.ui.View):
     def __init__(self, pages):
-        super().__init__(timeout=60)  # Optional timeout for pagination buttons
+        super().__init__(timeout=60)
         self.pages = pages
-        self.page_index = 0  # Start with the first page
+        self.current_page = 0
 
-    async def update_embed(self, interaction, embed):
-        """Update the embed with the current page content."""
-        embed.description = self.pages[self.page_index]
-        embed.set_footer(text=f"Page {self.page_index + 1}/{len(self.pages)} | Use the buttons below to navigate.")
-        await interaction.response.edit_message(embed=embed)
+    @discord.ui.button(label="Previous", style=discord.ButtonStyle.blurple)
+    async def previous_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.current_page = (self.current_page - 1) % len(self.pages)
+        await self.update_embed(interaction)
 
-    @discord.ui.button(label="Previous", style=discord.ButtonStyle.primary)
-    async def previous_page(self, button: discord.ui.Button, interaction: discord.Interaction):
-        """Navigate to the previous page."""
-        # Fetch the message object from the interaction
-        message = interaction.message
-        embed = message.embeds[0]  # Get the current embed of the message
-        if self.page_index > 0:
-            self.page_index -= 1
-            await self.update_embed(interaction, embed)
-        else:
-            await interaction.response.send_message("You're already on the first page.", ephemeral=True)
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.green)
+    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.current_page = (self.current_page + 1) % len(self.pages)
+        await self.update_embed(interaction)
 
-    @discord.ui.button(label="Next", style=discord.ButtonStyle.primary)
-    async def next_page(self, button: discord.ui.Button, interaction: discord.Interaction):
-        """Navigate to the next page."""
-        # Fetch the message object from the interaction
-        message = interaction.message
-        embed = message.embeds[0]  # Get the current embed of the message
-        if self.page_index < len(self.pages) - 1:
-            self.page_index += 1
-            await self.update_embed(interaction, embed)
-        else:
-            await interaction.response.send_message("You're already on the last page.", ephemeral=True)
+    @discord.ui.button(label="Close", style=discord.ButtonStyle.danger)
+    async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.message.delete()  # Deletes the message with the buttons
+
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.gray)
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Revert to the category selection view
+        embed = discord.Embed(
+            title="✨ Dizkord-Chan's Cute Commands ✨",
+            description="Choose a category to view commands:",
+            color=0xFFC0CB
+        )
+        embed.set_thumbnail(
+            url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&"
+        )
+        embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
+
+        # Recreate the category selection buttons
+        view = CommandView()
+        view.add_item(discord.ui.Button(label="Fun", style=discord.ButtonStyle.blurple, custom_id="fun"))
+        view.add_item(discord.ui.Button(label="Moderation", style=discord.ButtonStyle.green, custom_id="moderation"))
+        view.add_item(discord.ui.Button(label="Utility", style=discord.ButtonStyle.gray, custom_id="utility"))
+
+        # Send the response with the updated embed and buttons
+        await interaction.response.edit_message(embed=embed, view=view)
+
+    async def update_embed(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="🎉 Fun Commands",
+            description=self.pages[self.current_page],
+            color=0xFFC0CB
+        )
+        embed.set_footer(text=f"Page {self.current_page + 1}/{len(self.pages)} | Use the buttons below to navigate.")
+        await interaction.response.edit_message(embed=embed, view=self)
 
 # Sample content for the fun commands, split into pages
 fun_pages = [
     "🎉 **Fun Commands - Page 1**\n\n💬 `%say <message>` - Bot repeats your message.\n💌 `%pickupline` - Sends a random pickup line.\n😉 `%tease` - Sends a teasing phrase.\n😏 `%kinky` - Sends a kinky phrase.\n💥 `%spank <user>` - Spanks a user playfully.\n💋 `%kiss <user>` - Sends a sweet kiss.",
     "🎉 **Fun Commands - Page 2**\n\n🤗 `%hug <user>` - Hugs a user lovingly.\n👋 `%slap <user>` - Slaps a user playfully.\n💃 `%dance` - Let's dance! 💃🕺.\n😹 `%meme` - Sends a random meme.\n🐱 `%cat` - Sends a random cat image.\n🐶 `%dog` - Sends a random dog image.",
-    "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors."
+    "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors.\n💬 `/quote` - Get a random quote."
 ]
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
-    if interaction.data["custom_id"] == "fun":
-        embed = discord.Embed(
-            title="🎉 Fun Commands",
-            description=fun_pages[0],  # Set the initial page content
-            color=0xFFC0CB
-        )
-        embed.set_footer(text="Page 1/3 | Use the buttons below to navigate.")
-        
-        # Create a view for pagination
-        view = PaginationView(pages=fun_pages)
-        await interaction.response.edit_message(embed=embed, view=view)
+    if interaction.type == discord.InteractionType.component:  # Ensure it's a component interaction
+        custom_id = interaction.data.get("custom_id", None)
 
-    elif interaction.data["custom_id"] == "moderation":
-        embed = discord.Embed(
-            title="🔨 Moderation Commands",
-            description="Commands to manage your server efficiently:",
-            color=0xFFC0CB
-        )
-        embed.add_field(name="🔇 `%mute <user>`", value="Mutes a user in the server.", inline=False)
-        embed.add_field(name="🔊 `%unmute <user>`", value="Unmutes a user in the server.", inline=False)
-        embed.add_field(name="🚪 `%kick <user>`", value="Kicks a user out of the server.", inline=False)
-        embed.add_field(name="⚔️ `%ban <user>`", value="Bans a user from the server.", inline=False)
-        embed.add_field(name="🔓 `%unban <user>`", value="Unbans a user.", inline=False)
-        embed.add_field(name="👮‍♀️👮‍♂️ `%jail <user>`", value="Jails a user.", inline=False)
-        embed.add_field(name="🕊 `%release <user>`", value="Releases a user.", inline=False)
-        embed.add_field(name="📊 `%polladd [question] [option1] [option2] ...`", value="Create a poll with multiple options.", inline=False)
-        await interaction.response.edit_message(embed=embed)
+        if custom_id == "fun":
+            embed = discord.Embed(
+                title="🎉 Fun Commands",
+                description=fun_pages[0],  # Initial page
+                color=0xFFC0CB
+            )
+            embed.set_footer(text="Page 1/3 | Use the buttons below to navigate.")
 
-    elif interaction.data["custom_id"] == "utility":
-        embed = discord.Embed(
-            title="🛠️ Utility Commands",
-            description="Useful tools and utilities for your server:",
-            color=0xFFC0CB
-        )
-        embed.add_field(name="❤️ `%love`", value="Sends a heartful message of love.", inline=False)
-        embed.add_field(name="🧹 `%purge <number>`", value="Deletes a specified number of messages.", inline=False)
-        embed.add_field(name="⏱ `%uptime`", value="Shows the bot’s uptime in minutes and seconds.", inline=False)
-        embed.add_field(name="📊 `%serverinfo`", value="Displays information about the server.", inline=False)
-        embed.add_field(name="🏓 `%ping`", value="Check the bot’s ping (latency).", inline=False)
-        embed.add_field(name="👤 `%userinfo [@user]`", value="Displays information about the user (default is the author).", inline=False)
-        embed.add_field(name="🎂 `%birthday [YYYY-MM-DD]`", value="Set and store your birthday (for future notifications).", inline=False)
-        await interaction.response.edit_message(embed=embed)
+            view = PaginationView(pages=fun_pages)
+            await interaction.response.edit_message(embed=embed, view=view)
 
-# Custom help command
+        elif custom_id == "moderation":
+            embed = discord.Embed(
+                title="🔨 Moderation Commands",
+                description="Commands to manage your server efficiently:",
+                color=0xFFC0CB
+            )
+            embed.add_field(name="🔇 `%mute <user>`", value="Mutes a user in the server.", inline=False)
+            embed.add_field(name="🔊 `%unmute <user>`", value="Unmutes a user in the server.", inline=False)
+            embed.add_field(name="🚪 `%kick <user>`", value="Kicks a user out of the server.", inline=False)
+            embed.add_field(name="⚔️ `%ban <user>`", value="Bans a user from the server.", inline=False)
+            embed.add_field(name="🔓 `%unban <user>`", value="Unbans a user.", inline=False)
+            embed.add_field(name="👮‍♀️👮‍♂️ `%jail <user>`", value="Jails a user.", inline=False)
+            embed.add_field(name="🕊 `%release <user>`", value="Releases a user.", inline=False)
+            embed.add_field(name="📊 `%polladd [question] [option1] [option2] ...`", value="Create a poll with multiple options.", inline=False)
+            await interaction.response.edit_message(embed=embed)
+
+        elif custom_id == "utility":
+            embed = discord.Embed(
+                title="🛠️ Utility Commands",
+                description="Useful tools for your server:",
+                color=0xFFC0CB
+            )
+            embed.add_field(name="❤️ `%love`", value="Sends a heartful message of love.", inline=False)
+            embed.add_field(name="🧹 `%purge <number>`", value="Deletes a specified number of messages.", inline=False)
+            embed.add_field(name="⏱ `%uptime`", value="Shows the bot’s uptime in minutes and seconds.", inline=False)
+            embed.add_field(name="📊 `%serverinfo`", value="Displays information about the server.", inline=False)
+            embed.add_field(name="🏓 `%ping`", value="Check the bot’s ping (latency).", inline=False)
+            embed.add_field(name="👤 `%userinfo [@user]`", value="Displays information about the user (default is the author).", inline=False)
+            embed.add_field(name="🎂 `%birthday [YYYY-MM-DD]`", value="Set and store your birthday (for future notifications).", inline=False)
+            await interaction.response.edit_message(embed=embed)
+
+# Define a custom view class with the close button
+class CommandView(discord.ui.View):
+    @discord.ui.button(label="Close", style=discord.ButtonStyle.danger)
+    async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.message.delete()  # Deletes the message when clicked
+
+# Define the 'cmds' command
 @bot.command()
 async def cmds(ctx):
     embed = discord.Embed(
@@ -512,11 +535,18 @@ async def cmds(ctx):
         description="Choose a category to view commands:",
         color=0xFFC0CB
     )
-    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&")
+    embed.set_thumbnail(
+        url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&"
+    )
     embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
 
-    # Create a view for the command options
-    view = CommandsView()  # Assuming you have your view created elsewhere
+    # Create a custom view and add buttons
+    view = CommandView()  # Use the custom view class that includes the close button
+    view.add_item(discord.ui.Button(label="Fun", style=discord.ButtonStyle.blurple, custom_id="fun"))
+    view.add_item(discord.ui.Button(label="Moderation", style=discord.ButtonStyle.green, custom_id="moderation"))
+    view.add_item(discord.ui.Button(label="Utility", style=discord.ButtonStyle.gray, custom_id="utility"))
+
+    # Send the embed with the buttons
     await ctx.send(embed=embed, view=view)
 
 # spank    
