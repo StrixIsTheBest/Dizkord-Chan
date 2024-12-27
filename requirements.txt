@@ -6,3 +6,4 @@ python-dotenv
 Flask
 werkzeug
 pytz
+cohere
