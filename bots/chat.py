@@ -32,7 +32,7 @@ def chat_with_anime_girl(input_text):
     response = co.generate(
         model='command-nightly',  # Try using 'command-medium' for reliable access
         prompt=prompt,
-        max_tokens=500,  # Limit the response length
+        max_tokens=150,  # Limit the response length
         temperature=0.9,  # Set creativity level
     )
 
