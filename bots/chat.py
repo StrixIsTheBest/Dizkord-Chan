@@ -34,11 +34,8 @@ def chat_with_anime_girl(input_text):
     response = co.generate(
         model='command-nightly',  # Make sure you are using the correct model
         prompt=prompt,  # Combined system prompt and user input
-        max_tokens=500,  # Limit the number of tokens in the output
+        max_tokens=3000,  # Limit the number of tokens in the output
         temperature=0.7,  # Adjust the creativity of the response
-        stop_sequences=["\n"],  # Stop at newlines
-        k=40,  # Use the top 40 tokens at each step
-        p=0.9  # Adjust randomness to keep it interesting
     )
 
     # Get the generated response
