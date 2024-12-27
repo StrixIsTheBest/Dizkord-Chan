@@ -1,5 +1,6 @@
 import os
 import cohere
+import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -23,16 +24,17 @@ You speak energetically, using phrases like 'UwU,' 'Nyaa~,' and 'Ara ara~' occas
 Emojis like 🌸, 💖, and ✨ are used sparingly to add warmth, keeping your tone friendly and positive without being over the top.
 """
 
-# Function to chat with the anime assistant
-def chat_with_anime_girl(input_text):
+# Asynchronous function to chat with the anime assistant
+async def chat_with_anime_girl(input_text):
     # Combine the system prompt with the user input
     prompt = system_prompt + "\nUser: " + input_text + "\nDizkord-Chan:"
 
     # Generate a response using Cohere's API
-    response = co.generate(
+    response = await asyncio.to_thread(
+        co.generate,
         model='command-nightly',  # Try using 'command-medium' for reliable access
         prompt=prompt,
-        max_tokens=150,  # Limit the response length
+        max_tokens=500,  # Limit the response length
         temperature=0.9,  # Set creativity level
     )
 
@@ -58,7 +60,7 @@ class AnimeChat(commands.Cog):
         # Check if the message is in the specified channel and if the bot is mentioned
         if message.channel.name == chat_channel_name and (self.bot.user in message.mentions or self.bot.user.name.lower() in message.content.lower()):
             user_input = message.content  # Get user input
-            reply = chat_with_anime_girl(user_input)  # Get the AI response
+            reply = await chat_with_anime_girl(user_input)  # Get the AI response asynchronously
 
             # Send the AI's response to the channel
             await message.channel.send(reply)
