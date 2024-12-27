@@ -1,3 +1,4 @@
+
 import discord
 from discord.ext import commands, tasks
 from discord.ui import View, Button
@@ -12,6 +13,7 @@ from datetime import datetime
 import bots.webserver
 from bots.quote import start_quote_task
 from dotenv import load_dotenv
+from bots.chat import AnimeChat
     
 # Bot setup
 intents = discord.Intents.default()
@@ -185,6 +187,7 @@ async def on_ready():
     bot.loop.create_task(bots.webserver.ping_bot())
     start_quote_task(bot, channel_id)
     check_birthdays.start()
+    await bot.add_cog(AnimeChat(bot))
     
 # Event: Welcome a new user
 @bot.event
