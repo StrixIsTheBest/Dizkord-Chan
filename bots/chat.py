@@ -1,8 +1,7 @@
-import discord
-from discord.ext import commands
 import os
-from dotenv import load_dotenv
 import cohere
+from discord.ext import commands
+from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
@@ -29,7 +28,7 @@ def chat_with_anime_girl(input_text):
     # Combine the system prompt with the user input
     prompt = system_prompt + "\nUser: " + input_text + "\nDizkord-Chan:"
 
-    # Generate a response using Cohere's API (use 'command-medium' model)
+    # Generate a response using Cohere's API
     response = co.generate(
         model='command-nightly',  # Try using 'command-medium' for reliable access
         prompt=prompt,
@@ -54,13 +53,12 @@ class AnimeChat(commands.Cog):
             return
 
         # Define the channel for chatting
-        chat_channel_name = "├・🎀・ai-chat"
+        chat_channel_name = "├・🎀・ai-chat"  # Change this to the correct channel name
 
-        # Check if the message is in the specified channel
-        if message.channel.name == chat_channel_name:
+        # Check if the message is in the specified channel and if the bot is mentioned
+        if message.channel.name == chat_channel_name and (self.bot.user in message.mentions or self.bot.user.name.lower() in message.content.lower()):
             user_input = message.content  # Get user input
             reply = chat_with_anime_girl(user_input)  # Get the AI response
 
             # Send the AI's response to the channel
             await message.channel.send(reply)
-
