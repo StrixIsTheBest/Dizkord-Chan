@@ -35,7 +35,7 @@ def chat_with_anime_girl(input_text):
         model='command-nightly',  # Make sure you are using the correct model
         prompt=prompt,  # Combined system prompt and user input
         max_tokens=3000,  # Limit the number of tokens in the output
-        temperature=0.7,  # Adjust the creativity of the response
+        temperature=0.7  # Adjust the creativity of the response
     )
 
     # Get the generated response
