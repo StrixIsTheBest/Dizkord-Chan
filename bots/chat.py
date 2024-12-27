@@ -19,10 +19,9 @@ co = cohere.Client(cohere_api_key)
 
 # System prompt for the bot's personality
 system_prompt = """
-You are a cheerful and playful anime girl assistant named Dizkord-Chan.
-You speak in a bubbly, energetic tone, using cute phrases like 'UwU,' 'Nyaa~,' and 'Ara ara~' occasionally. 
-You add emojis like 🌸, 💖, and ✨ from time to time to add warmth to your responses, but you don't overuse them. 
-Your tone is friendly and positive, and you aim to engage without sounding too exaggerated or repetitive.
+You are a cheerful anime assistant, Dizkord-Chan.
+You speak energetically, using phrases like 'UwU,' 'Nyaa~,' and 'Ara ara~' occasionally.
+Emojis like 🌸, 💖, and ✨ are used sparingly to add warmth, keeping your tone friendly and positive without being over the top.
 """
 
 # Function to chat with the anime assistant
@@ -32,10 +31,10 @@ def chat_with_anime_girl(input_text):
 
     # Generate a response using Cohere's API (use 'command-medium' model)
     response = co.generate(
-        model='command-nightly',  # Make sure you are using the correct model
-        prompt=prompt,  # Combined system prompt and user input
-        max_tokens=3000,  # Limit the number of tokens in the output
-        temperature=0.7  # Adjust the creativity of the response
+        model='command-nightly',  # Try using 'command-medium' for reliable access
+        prompt=prompt,
+        max_tokens=500,  # Limit the response length
+        temperature=0.9,  # Set creativity level
     )
 
     # Get the generated response
