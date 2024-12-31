@@ -3,7 +3,7 @@ import random
 import discord
 from discord.ext import commands
 
-async def setup(bot):
+def setup_giveaway(bot: commands.Bot):
     @bot.command(name="giveaway")
     async def giveaway(ctx):
         """
