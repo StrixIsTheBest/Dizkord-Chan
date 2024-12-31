@@ -1,13 +1,21 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 import json
+import os
 
+# Set the channel name where the locklist will be stored
+LOCKLIST_CHANNEL_NAME = "╰・🎀・lock-list"
+
+# Initialize locklist as an empty dictionary
 locklist = {}
+
+async def get_locklist_channel(ctx):
+    """Get the locklist channel by name."""
+    return discord.utils.get(ctx.guild.text_channels, name=LOCKLIST_CHANNEL_NAME)
 
 async def update_locklist_channel(ctx):
     """Update the locklist channel with the latest list of locked characters."""
-    locklist_channel = discord.utils.get(ctx.guild.text_channels, name="locklist")
+    locklist_channel = await get_locklist_channel(ctx)
     if locklist_channel:
         embed = discord.Embed(
             title="🌸 **Locked Characters List** 🌸",
@@ -20,6 +28,37 @@ async def update_locklist_channel(ctx):
             embed.add_field(name=f"**{user.display_name}:**", value=", ".join(characters), inline=False)
         
         await locklist_channel.send(embed=embed)
+
+async def save_locklist_to_channel(ctx):
+    """Save the current locklist data to the locklist channel."""
+    locklist_channel = await get_locklist_channel(ctx)
+    if locklist_channel:
+        # Serialize locklist to a JSON string
+        locklist_data = json.dumps(locklist, indent=4)
+        
+        # Send or edit a message with the locklist data
+        # Check if a locklist message already exists; otherwise, create one
+        async for message in locklist_channel.history(limit=1):
+            if message.author == ctx.guild.me and message.content.startswith("```json"):
+                # If message already exists, edit it
+                await message.edit(content=f"```json\n{locklist_data}\n```")
+                return
+        
+        # If no existing locklist message, send a new one
+        await locklist_channel.send(f"```json\n{locklist_data}\n```")
+
+def load_locklist_from_channel(ctx):
+    """Load the locklist from the locklist channel after bot restart."""
+    locklist_channel = get_locklist_channel(ctx)
+    if locklist_channel:
+        async for message in locklist_channel.history(limit=5):
+            if message.author == ctx.guild.me and message.content.startswith("```json"):
+                try:
+                    # Attempt to parse the JSON content of the message
+                    return json.loads(message.content.strip("```json\n").strip())
+                except json.JSONDecodeError:
+                    pass
+    return {}
 
 def setup_locklist(bot: commands.Bot):
     @bot.command(name="lock")
@@ -40,7 +79,8 @@ def setup_locklist(bot: commands.Bot):
         locklist[ctx.author.id].extend(characters)
         locklist[ctx.author.id] = locklist[ctx.author.id][:5]
 
-        await update_locklist_channel(ctx)
+        # Save the updated locklist to the locklist channel
+        await save_locklist_to_channel(ctx)
 
         await ctx.send(f"🎉 Success! You've locked in these characters: {', '.join(characters)}! 🥳")
 
@@ -59,7 +99,8 @@ def setup_locklist(bot: commands.Bot):
             if char in locklist[ctx.author.id]:
                 locklist[ctx.author.id].remove(char)
 
-        await update_locklist_channel(ctx)
+        # Save the updated locklist to the locklist channel
+        await save_locklist_to_channel(ctx)
 
         await ctx.send(f"🎊 Successfully unlocked characters: {', '.join(characters)}! ✨")
 
@@ -79,3 +120,11 @@ def setup_locklist(bot: commands.Bot):
                 embed.add_field(name=f"**{user.display_name}:**", value=", ".join(characters), inline=False)
 
         await ctx.send(embed=embed)
+
+    # Load locklist from channel when the bot starts
+    @bot.event
+    async def on_ready():
+        print(f"{bot.user} has connected to Discord!")
+        locklist = load_locklist_from_channel(ctx)
+        if locklist:
+            print("Locklist loaded from the channel.")
