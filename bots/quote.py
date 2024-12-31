@@ -53,7 +53,7 @@ async def send_quote_of_the_day(bot, channel_id):
     embed = discord.Embed(
         title="✨ Quote of the Day ✨",
         description=f"\"{quote}\"\n- {author} from *{anime}*",
-        color=discord.Color.purple()
+        color=0xC546FF
     )
 
     embed.set_footer(text="Stay inspired! 💖 - Dizkord-Chan")
