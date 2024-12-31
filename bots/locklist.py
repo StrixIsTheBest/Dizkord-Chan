@@ -64,13 +64,16 @@ def setup_locklist(bot: commands.Bot):
     @bot.command(name="lock")
     async def lock(ctx, *characters: str):
         """Command to lock characters."""
+        # Normalize character names to lowercase for case-insensitive locking
+        characters = [char.lower() for char in characters]
+
         # Check if the user already locked in 5 characters
         if ctx.author.id in locklist and len(locklist[ctx.author.id]) >= 5:
             await ctx.send("💖 Oops! You can only lock in **5 characters**! Please unlock some before locking new ones. ✨")
             return
 
-        # Check if any of the characters are already locked by someone else
-        already_locked = [char for char in characters if any(char in chars for user_id, chars in locklist.items() if user_id != ctx.author.id)]
+        # Check if any of the characters are already locked by someone else (case-insensitive)
+        already_locked = [char for char in characters if any(char == locked_char for chars in locklist.values() for locked_char in chars)]
         
         if already_locked:
             await ctx.send(f"🚫 These characters are already locked by someone else: {', '.join(already_locked)}. Please choose different ones! 💕")
@@ -98,6 +101,9 @@ def setup_locklist(bot: commands.Bot):
         if ctx.author.id not in locklist or not locklist[ctx.author.id]:
             await ctx.send("😢 You haven't locked any characters yet! Please lock in some characters first. 💖")
             return
+
+        # Normalize character names to lowercase for consistency
+        characters = [char.lower() for char in characters]
 
         for char in characters:
             if char in locklist[ctx.author.id]:
@@ -136,3 +142,5 @@ def setup_locklist(bot: commands.Bot):
             global locklist
             locklist = loaded_locklist
             print("Locklist loaded from the channel.")
+        else:
+            print("No locklist found, starting with an empty one.")
