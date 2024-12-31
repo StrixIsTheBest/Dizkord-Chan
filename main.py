@@ -12,6 +12,7 @@ from pytz import timezone
 from datetime import datetime
 import bots.webserver
 from bots.quote import start_quote_task
+from bots.giveaway import setup_giveaway
 from dotenv import load_dotenv
 from bots.chat import AnimeChat
     
@@ -179,6 +180,7 @@ async def on_ready():
     bot.loop.create_task(bots.webserver.keep_alive())
     bot.loop.create_task(bots.webserver.ping_bot())
     start_quote_task(bot, channel_id)
+    setup_giveaway(bot)
     check_birthdays.start()
     await bot.add_cog(AnimeChat(bot))
     
