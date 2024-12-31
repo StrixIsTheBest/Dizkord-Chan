@@ -8,6 +8,6 @@ This project is for personal use only. Unauthorized use, redistribution, or comm
 
 All Rights Reserved.
 
-Copyright (c) 2024 Strix
+Copyright (c) 2024 StrixIsTheBest
 
 This software is proprietary and may not be used, distributed, or modified without the express written consent of the copyright holder. Any unauthorized use, reproduction, or distribution is prohibited.
