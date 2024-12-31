@@ -20,7 +20,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 intents.guilds = True
-intents.members = True  # Required for welcome/goodbye messages
+intents.members = True
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
@@ -50,7 +50,6 @@ def get_random_quote():
 # Slash command for /quote
 @bot.tree.command(name="quote", description="Get a random anime quote.")
 async def quote(interaction: discord.Interaction):
-    # Acknowledge the interaction to prevent the 404 error
     await interaction.response.defer()
 
     # Fetch random quote
@@ -59,14 +58,12 @@ async def quote(interaction: discord.Interaction):
     character = quote_data["character"]
     anime = quote_data["anime"]
 
-    # Create the embed
     embed = discord.Embed(
         title="🎬 Random Anime Quote 🎬",
         description=f"\"{quote}\"\n- {character}, *{anime}*",
         color=discord.Color.blue()
     )
 
-    # Send the response
     await interaction.followup.send(embed=embed)
 
 def load_birthdays():
@@ -88,22 +85,19 @@ def save_birthdays(birthdays):
         print(f"Error saving birthdays to file: {e}")
 
 # Task to check birthdays every 24 hours
-@tasks.loop(hours=24)  # Check daily
+@tasks.loop(hours=24)
 async def check_birthdays():
-    # Always load the latest birthdays from the file before checking
     user_birthday = load_birthdays()
     
     now = datetime.now(DUBAI_TIMEZONE)
     today = now.strftime("%m-%d")
 
     if not user_birthday:
-        return  # No birthdays to check
+        return
 
     for user_id, date in user_birthday.items():
-        # Check if the date matches today
         if datetime.strptime(date, "%Y-%m-%d").strftime("%m-%d") == today:
             try:
-                # Fetch user from Discord
                 user = await bot.fetch_user(int(user_id))
                 if user:
                     await user.send(f"🎂 Happy Birthday, {user.mention}! 🥳🎉 Hope you have an amazing day! 🎁🎈")
@@ -115,9 +109,9 @@ async def check_birthdays():
 async def birthday(ctx, date: str):
     try:
         birthday = datetime.strptime(date, "%Y-%m-%d")
-        user_birthday = load_birthdays()  # Always load latest birthdays from file
+        user_birthday = load_birthdays()
         user_birthday[str(ctx.author.id)] = birthday.strftime("%Y-%m-%d")
-        save_birthdays(user_birthday)  # Save birthdays after setting a new one
+        save_birthdays(user_birthday)
         await ctx.send(f"🎉 Your birthday is set to {birthday.strftime('%B %d, %Y')}!")
     except ValueError:
         await ctx.send("Please use the format YYYY-MM-DD for your birthday.")
@@ -126,7 +120,6 @@ class CommandsView(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-        # Add buttons for each category
         self.add_item(Button(label="Moderation", style=discord.ButtonStyle.primary, custom_id="moderation"))
         self.add_item(Button(label="Fun", style=discord.ButtonStyle.secondary, custom_id="fun"))
         self.add_item(Button(label="Utility", style=discord.ButtonStyle.success, custom_id="utility"))
@@ -209,21 +202,17 @@ async def on_member_remove(member):
 async def mute(ctx, user: discord.Member, *, reason="Being too loud~ 🌸"):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        # Check if the role exists; if not, create it
         if not muted_role:
             muted_role = await ctx.guild.create_role(
                 name="Muted",
                 permissions=discord.Permissions(send_messages=False)
             )
 
-            # Adjust permissions for the Muted role across all channels
             for channel in ctx.guild.channels:
                 await channel.set_permissions(muted_role, send_messages=False)
 
-        # Add the role to the user
         await user.add_roles(muted_role)
 
-        # Create the embed
         embed = discord.Embed(
             title="🔇 Muted!",
             description=f"{user.mention} has been silenced! Reason: {reason}",
@@ -234,7 +223,6 @@ async def mute(ctx, user: discord.Member, *, reason="Being too loud~ 🌸"):
         )
         embed.set_footer(text="✨ Dizkord-Chan ✨")
 
-        # Send the embed
         await ctx.send(embed=embed)
 
 # Command: Unmute a user
@@ -243,11 +231,9 @@ async def mute(ctx, user: discord.Member, *, reason="Being too loud~ 🌸"):
 async def unmute(ctx, user: discord.Member):
             muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-            # Check if the user has the Muted role
             if muted_role in user.roles:
                 await user.remove_roles(muted_role)
 
-                # Create the embed for unmuting
                 embed = discord.Embed(
                     title="🔊 Unmuted!",
                     description=f"{user.mention}, you’re free to speak again! Behave, okay? 🌸✨",
@@ -258,10 +244,8 @@ async def unmute(ctx, user: discord.Member):
                 )
                 embed.set_footer(text="✨ Dizkord-Chan ✨")
 
-                # Send the embed
                 await ctx.send(embed=embed)
             else:
-                # Create an embed for when the user isn't muted
                 embed = discord.Embed(
                     title="🤔 Not Muted!",
                     description=f"Umm, {user.mention} wasn’t muted, silly~ 💕",
@@ -269,38 +253,31 @@ async def unmute(ctx, user: discord.Member):
                 )
                 embed.set_footer(text="✨ Dizkord-Chan ✨")
 
-                # Send the embed
                 await ctx.send(embed=embed)
 
 # Command: Kick a user
 @bot.command()
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, user: discord.Member = None, *, reason="Breaking the rules~ 💔"):
-        # Check if a user is mentioned
         if user is None:
             await ctx.send("Oops~ You need to mention someone to kick them! 💔")
             return
 
-        # Kick the user
         await user.kick(reason=reason)
 
-        # List of GIF URLs
         gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321002689152290857/74cbd301f3babfda58f3c822c4d127e4.gif?ex=676ba720&is=676a55a0&hm=16c819f197fe434bf45b63c4e3fa42d7e51e04036db562ae853d66e4f26709e6&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321012158707929108/-JyjyH.gif?ex=676baff1&is=676a5e71&hm=ba45e2af9905d014fb43eb957ded015041a65ccd9ba31c413920a6cec8def021&"
         ]
 
-        # Randomly choose a GIF
         gif_to_send = random.choice(gifs)
 
-        # Embed with GIF
         embed = discord.Embed(
             description=f"{user.mention} has been kicked out of the server! 😭 Reason: {reason}",
             color=0xFF0000
         )
         embed.set_image(url=gif_to_send)
 
-        # Send the embed
         await ctx.send(embed=embed)
 
 # Command: Ban a user
@@ -311,26 +288,21 @@ async def ban(ctx, user: discord.Member = None, *, reason="Breaking the rules~ �
             await ctx.send("Nyaa~! Please mention someone to ban, *desu*~ 👀")
             return
 
-        # List of GIF URLs
         gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321008298987618365/ef36eb27805266589b2546775ce1d355.gif?ex=676bac59&is=676a5ad9&hm=9951c3c48dcf09e186a78c938ddd044b609bee7edcee72ac7ee492cd81217939&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321008298543157249/QwReiS0.gif?ex=676bac59&is=676a5ad9&hm=a5c68a570b555662e6bcdab910b0c50cdc317f98ddeb38db960fd9c8d8ff9f20&"
         ]
 
-        # Randomly choose a GIF
         gif_to_send = random.choice(gifs)
 
-        # Embed setup
         embed = discord.Embed(
             description=f"Ah! {user.mention} has been banned from the server~ 🌟 Reason: {reason} *nya~*",
-            color=0xFFB6C1  # Soft pink color for the embed
+            color=0xFFB6C1
         )
         embed.set_image(url=gif_to_send)
 
-        # Ban the user
         await user.ban(reason=reason)
 
-        # Send the embed
         await ctx.send(embed=embed)
 
 # Command: Unban a user
@@ -371,11 +343,6 @@ async def release(ctx, user: discord.Member):
     else:
         await ctx.send(f"Umm, {user.mention} isn’t in jail, silly~ 💕")
 
-# Command: Say something as Dyno-Chan
-@bot.command()
-async def say(ctx, *, message):
-    await ctx.send(f"{message} 🌸")
-
 # Command: Pickup lines
 @bot.command()
 async def pickupline(ctx):
@@ -385,7 +352,6 @@ async def pickupline(ctx):
 # Command: Tease
 @bot.command()
 async def tease(ctx):
-        # Assuming tease_phrases is already defined elsewhere in your code
         tease_gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1320762155238424669/tumblr_p2v8jr3yFT1qkz08qo1_540.gif?ex=676ac71c&is=6769759c&hm=779682fb87491aaa4441bde037330e3bcc098ce79cbfc22b0b22278eff0223b8&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1320998347527557151/yahari-oregariu-anime-ep6-15-hikigaya-hachiman-yukinoshita-haruno1.gif?ex=676ba315&is=676a5195&hm=cd0e01de3a193a49d08e9ea5fa3c4dd4efedbd2ee309e3f3393971acc1fc72ae&",
@@ -472,20 +438,20 @@ class PaginationView(discord.ui.View):
 
 # Sample content for the fun commands, split into pages
 fun_pages = [
-    "🎉 **Fun Commands - Page 1**\n\n💬 `%say <message>` - Bot repeats your message.\n💌 `%pickupline` - Sends a random pickup line.\n😉 `%tease` - Sends a teasing phrase.\n😏 `%kinky` - Sends a kinky phrase.\n💥 `%spank <user>` - Spanks a user playfully.\n💋 `%kiss <user>` - Sends a sweet kiss.",
+    "🎉 **Fun Commands - Page 1**\n\n💌 `%pickupline` - Sends a random pickup line.\n😉 `%tease` - Sends a teasing phrase.\n😏 `%kinky` - Sends a kinky phrase.\n💥 `%spank <user>` - Spanks a user playfully.\n💋 `%kiss <user>` - Sends a sweet kiss.",
     "🎉 **Fun Commands - Page 2**\n\n🤗 `%hug <user>` - Hugs a user lovingly.\n👋 `%slap <user>` - Slaps a user playfully.\n💃 `%dance` - Let's dance! 💃🕺.\n😹 `%meme` - Sends a random meme.\n🐱 `%cat` - Sends a random cat image.\n🐶 `%dog` - Sends a random dog image.",
     "🎉 **Fun Commands - Page 3**\n\n🎱 `%8ball [question]` - Ask the bot a yes/no question, and get a random answer.\n🖖 `%rps [rock/paper/scissors]` - Play a game of Rock-Paper-Scissors.\n💬 `/quote` - Get a random quote."
 ]
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
-    if interaction.type == discord.InteractionType.component:  # Ensure it's a component interaction
+    if interaction.type == discord.InteractionType.component:
         custom_id = interaction.data.get("custom_id", None)
 
         if custom_id == "fun":
             embed = discord.Embed(
                 title="🎉 Fun Commands",
-                description=fun_pages[0],  # Initial page
+                description=fun_pages[0],
                 color=0xFFC0CB
             )
             embed.set_footer(text="Page 1/3 | Use the buttons below to navigate.")
@@ -528,7 +494,7 @@ async def on_interaction(interaction: discord.Interaction):
 class CommandView(discord.ui.View):
     @discord.ui.button(label="Close", style=discord.ButtonStyle.danger)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.message.delete()  # Deletes the message when clicked
+        await interaction.message.delete()
 
 # Define the 'cmds' command
 @bot.command()
@@ -543,20 +509,17 @@ async def cmds(ctx):
     )
     embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
 
-    # Create a custom view and add buttons
-    view = CommandView()  # Use the custom view class that includes the close button
+    view = CommandView()
     view.add_item(discord.ui.Button(label="Fun", style=discord.ButtonStyle.blurple, custom_id="fun"))
     view.add_item(discord.ui.Button(label="Moderation", style=discord.ButtonStyle.green, custom_id="moderation"))
     view.add_item(discord.ui.Button(label="Utility", style=discord.ButtonStyle.gray, custom_id="utility"))
 
-    # Send the embed with the buttons
     await ctx.send(embed=embed, view=view)
 
 # spank    
 @bot.command(name="spank")
 async def spank(ctx, user: discord.Member = None):
         if user is None:
-            # Prompt the user to mention someone
             await ctx.send("Oops! You need to mention someone to spank them! 😳💖")
             return
 
@@ -579,14 +542,14 @@ async def spank(ctx, user: discord.Member = None):
 
         gif_url = "https://cdn.discordapp.com/attachments/1320720271304560707/1320748895759896689/Q88JrwW.gif?ex=676abac3&is=67696943&hm=7517828c697c4402f603c9a2df9e39406d69febc7bd36a9a939d73d9aed0496b&"
 
-        if user == ctx.me:  # Bot is mentioned
+        if user == ctx.me:
             response = random.choice(spank_responses_self)
-        else:  # A user other than the bot is mentioned
+        else:
             response = random.choice(spank_responses_user)
 
         embed = discord.Embed(
             description=response,
-            color=0xFFC0CB  # Light pink color for the embed
+            color=0xFFC0CB
         )
         embed.set_image(url=gif_url)
 
@@ -609,7 +572,6 @@ async def hug(ctx, user: discord.Member = None):
                             )
                             await ctx.send(embed=embed)
                         else:
-                            # List of random GIFs for hugging someone else
                             hug_gifs = [
                                 "https://cdn.discordapp.com/attachments/1320720271635906619/1320998251276537886/336da064cd092e30d2a7db6cd052515e.gif?ex=676ba2fe&is=676a517e&hm=a40b1a121bed4fd84e0563c08a5435216bc010c166970140e7c86fc90ef47e1b&",
                                 "https://cdn.discordapp.com/attachments/1320720271635906619/1320998251624796201/anime-boy-wants-cuddle-v5awreez6ggjoznf.gif?ex=676ba2fe&is=676a517e&hm=610921e26ede9c22d264f3a02e9d77a118c5f896a08f8a462b081d37d3d6174b&",
@@ -618,7 +580,7 @@ async def hug(ctx, user: discord.Member = None):
                                 "https://cdn.discordapp.com/attachments/1320720273393061950/1321091844028895253/tenor_3.gif?ex=676bfa28&is=676aa8a8&hm=faec41469c621ff49b151f66ee6c3c79c8ff2da1a0cda860aa4837075b8be7af&"
                             ]
 
-                            selected_gif = random.choice(hug_gifs)  # Randomly select one of the GIFs
+                            selected_gif = random.choice(hug_gifs)
 
                             embed = discord.Embed(
                                 description=f"Aww, {user.mention}, here’s a big warm hug from {ctx.author.mention}! 🤗💖",
@@ -630,7 +592,6 @@ async def hug(ctx, user: discord.Member = None):
 #kiss
 @bot.command(name="kiss")
 async def kiss(ctx, user: discord.Member = None):
-        # List of kiss GIFs
         kiss_gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1320998378963730492/OK6W_koKDTOqqqLDbIoPAs121R2UXd_2WR9_uOI5fRE.gif?ex=676ba31c&is=676a519c&hm=71aaaf61e22bffa0863c72eded76846028ba347db24bb2d35899c224d6e77d5d&",
             "https://cdn.discordapp.com/attachments/1320720273393061950/1321091844951638109/tenor.gif?ex=676bfa28&is=676aa8a8&hm=db84bdcf6a888bddd942483a3a2115f4b2259124eb163d1ff59a4eaa34d17d1e&",
@@ -653,24 +614,20 @@ async def pat(ctx, user: discord.Member = None):
             await ctx.send("Whoops~ You need to mention someone to pat, darling! 💖")
             return
 
-        # List of GIF URLs
         gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321012773861457951/download_2.gif?ex=676bb084&is=676a5f04&hm=90212c4ca0d5da1ad4f371c1538f741f67212d435e690cd494e5034caed6bd85&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321012773257216043/download_1.gif?ex=676bb084&is=676a5f04&hm=427e0eb8b0b0c72993f89bc00a5e5c73186b3d8cd0ed2b0e6bb916840c5b5a16&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321012772863213629/4c03bbe17bc0825e064d049c5f8262f3.gif?ex=676bb084&is=676a5f04&hm=f11bb17a6dcb192f4b8fd348fceae6f81687785542e1c1aaf0a9119c4eb464ae&"
         ]
 
-        # Randomly choose a GIF
         gif_to_send = random.choice(gifs)
 
-        # Embed setup
         embed = discord.Embed(
             description=f"Pat pat! 🐾 {user.mention}, you’re such a good boy/girl! 💕✨",
-            color=0xFFB6C1  # A soft pink color for the embed
+            color=0xFFB6C1
         )
         embed.set_image(url=gif_to_send)
 
-        # Send the embed
         await ctx.send(embed=embed)
 
 #slap
@@ -680,7 +637,6 @@ async def slap(ctx, user: discord.Member = None):
             await ctx.send("Whoops! Mention someone to slap, darling! 😘")
             return
 
-        # List of GIF URLs
         gifs = [
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321011553759137854/mai-sakurajima-498-x-280-gif-p0x0f4wdxheprqeo.gif?ex=676baf61&is=676a5de1&hm=00c6bd27fee900cb8d3280eb4cb8467df9b88046e6eb6364244be2a10763412c&",
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321009658781110312/b6d8a83eb652a30b95e87cf96a21e007.gif?ex=676bad9d&is=676a5c1d&hm=ad8384cc58a0562e915f1283f95865a51de4c6f177b5fc8a570c98dbc9a1301a&",
@@ -689,45 +645,37 @@ async def slap(ctx, user: discord.Member = None):
             "https://cdn.discordapp.com/attachments/1320720271635906619/1321090923081236521/slap_rezero.gif?ex=676bf94c&is=676aa7cc&hm=7e807cfd404cbe7d14034f0496495afe8facc5ac32d0ec59bd9e9a21b8c58bc3&"
         ]
 
-        # Randomly choose a GIF
         gif_to_send = random.choice(gifs)
 
-        # Embed setup
         embed = discord.Embed(
             description=f"Slap! 💥 {user.mention}, you’re too cheeky! 💋😈",
-            color=0xFF69B4  # Hot pink color for the embed
+            color=0xFF69B4
         )
         embed.set_image(url=gif_to_send)
 
-        # Send the embed
         await ctx.send(embed=embed)
 
 #love
 @bot.command(name="love")
 async def love(ctx):
-    # Love message
     love_message = "Sending you all my love! 💖✨ Hope you have the most magical day, darling! 🌸💫"
 
-    # Create an embed with the love GIF
     embed = discord.Embed(
         description=love_message,
-        color=0xFFC0CB  # Light pink color for the embed
+        color=0xFFC0CB
     )
     embed.set_image(url="https://cdn.discordapp.com/attachments/1320720271304560707/1320753564909441076/832d6e5b6d9392597e1fbd9eb0f99e5c.gif?ex=676abf1c&is=67696d9c&hm=3eee52eedf2a4672bace43fbe17b766569d94a1223e24e4301b94f4d0c73e9ee&")
 
-    # Send the embed with the love message and GIF
     await ctx.send(embed=embed)
 
 #purge
 @bot.command(name="purge")
 async def purge(ctx, amount: int):
     try:
-        # Check if the amount is greater than 0
         if amount <= 0:
             await ctx.send("You need to enter a number greater than 0! 💦")
             return
 
-        # Purge the specified amount of messages
         await ctx.channel.purge(limit=amount)
         await ctx.send(f"Deleted {amount} messages! ✨💖", delete_after=5)
 
@@ -737,7 +685,6 @@ async def purge(ctx, amount: int):
 #dance
 @bot.command(name="dance")
 async def dance(ctx):
-    # List of GIF URLs
     gifs = [
         "https://cdn.discordapp.com/attachments/1320720271635906619/1321088479261753375/tenor.gif?ex=676bf706&is=676aa586&hm=4961e9c4ef48889dfc7662012a522017013c9c910bc31f55cbea50616933cb0f&",
         "https://cdn.discordapp.com/attachments/1320720271635906619/1321089964967985152/tenor_3.gif?ex=676bf868&is=676aa6e8&hm=cc75e2738fbf6741e7aa46d527300ca734abc5f303de27e9821307a14659a118&",
@@ -745,17 +692,14 @@ async def dance(ctx):
         "https://cdn.discordapp.com/attachments/1320720271635906619/1321089964557078589/tenor_2.gif?ex=676bf868&is=676aa6e8&hm=f02c1a42a573be4404ea2dd22d6b67f9052a34da6518e5ac092b8a8605d5e152&"
     ]
 
-    # Randomly choose a GIF
     gif_to_send = random.choice(gifs)
 
-    # Embed setup
     embed = discord.Embed(
         description=f"Let's dance! 💃🕺",
-        color=0xFF69B4  # Hot pink color for the embed
+        color=0xFF69B4
     )
     embed.set_image(url=gif_to_send)
 
-    # Send the embed
     await ctx.send(embed=embed)
 
 # NEW COMMANDS
@@ -764,7 +708,6 @@ start_time = time.time()
 
 def get_meme():
     try:
-        # API endpoint for random memes
         url = "https://meme-api.com/gimme"
         response = requests.get(url)
         if response.status_code == 200:
@@ -779,17 +722,15 @@ def get_meme():
 @bot.command()
 async def cat(ctx):
     """Fetch a random cat image from The Cat API."""
-    url = "https://api.thecatapi.com/v1/images/search"  # The Cat API endpoint
+    url = "https://api.thecatapi.com/v1/images/search"
     
     try:
-        # Get a random cat image from The Cat API
         response = requests.get(url)
         
-        # Check if the response is successful
         if response.status_code == 200:
-            cat_data = response.json()  # Parse the JSON response
-            cat_image_url = cat_data[0]['url']  # Extract the image URL
-            await ctx.send(cat_image_url)  # Send the cat image URL in the chat
+            cat_data = response.json()
+            cat_image_url = cat_data[0]['url']
+            await ctx.send(cat_image_url)
         else:
             await ctx.send("Sorry, I couldn't fetch a cat image at the moment.")
     
@@ -824,17 +765,14 @@ async def _8ball(ctx, *, question):
     
     answer = random.choice(responses)
 
-    # Create a cute embed with a magical theme
     embed = discord.Embed(
         title="🔮 Magic 8-Ball ✨",
         description=f"**Question:** {question}\n**Answer:** {answer}",
-        color=discord.Color.blue()  # A soft blue color to keep it calming
+        color=discord.Color.blue()
     )
 
-    # Add some kawaii flair in the footer
     embed.set_footer(text="✨ Ask another question? ✨")
 
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="rps")
@@ -853,17 +791,14 @@ async def rps(ctx, choice):
     else:
         result = f"😭 You lose! {bot_choice.capitalize()} beats {choice.capitalize()}... Better luck next time! 😭"
 
-    # Create a cute embed for the result
     embed = discord.Embed(
         title="✂️ Rock, Paper, Scissors! ✋",
         description=result,
-        color=discord.Color.purple()  # Soft purple color to keep it cute
+        color=discord.Color.purple()
     )
 
-    # Add some kawaii touch to the footer
     embed.set_footer(text="Play again? 💖")
 
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="uptime")
@@ -872,60 +807,49 @@ async def uptime(ctx):
     minutes = uptime // 60
     seconds = uptime % 60
 
-    # Create a cute embed for uptime display
     embed = discord.Embed(
         title="⏰ Bot Uptime! ⏰",
         description=f"**The bot has been running for**\n{int(minutes)} minutes and {int(seconds)} seconds! ✨",
-        color=discord.Color.pink()  # Kawaii pink color for the cute vibe
+        color=discord.Color.pink()
     )
     
-    # Add a footer to add some charm
     embed.set_footer(text="Thank you for being with us! 💕")
 
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="serverinfo")
 async def serverinfo(ctx):
     guild = ctx.guild
 
-    # Create an embed with cute styling
     embed = discord.Embed(
         title=f"🌸 {guild.name} Server Info 🌸", 
         description=f"Here's some info about the **{guild.name}** server! 🥳💖",
-        color=discord.Color.purple()  # Cute purple color
+        color=discord.Color.purple()
     )
     
-    # Add fields to the embed
     embed.add_field(name="💖 Server Name", value=guild.name, inline=False)
     embed.add_field(name="👥 Total Members", value=guild.member_count, inline=False)
     embed.add_field(name="🔒 Verification Level", value=guild.verification_level, inline=False)
     embed.add_field(name="💎 Premium Tier", value=guild.premium_tier, inline=False)
     
-    # Add a footer with an extra cute message
     embed.set_footer(text="Stay cute and enjoy your time on the server! 💕")
     
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="ping")
 async def ping(ctx):
     latency = round(bot.latency * 1000)
 
-    # Create an embed with a cute style
     embed = discord.Embed(
         title="🏓 Ping Pong! 🏓", 
         description=f"**Pong!** 🥳💫",
-        color=discord.Color.pink()  # Cute pink color
+        color=discord.Color.pink()
     )
     
-    # Add the latency field to the embed
     embed.add_field(name="⏱️ Latency", value=f"{latency}ms", inline=False)
     
-    # Add a footer with a cute message
     embed.set_footer(text="Stay cute while we ping! 💖")
     
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="userinfo")
@@ -933,22 +857,18 @@ async def userinfo(ctx, member: discord.Member = None):
     if member is None:
         member = ctx.author
     
-    # Create an embed with a cute style
     embed = discord.Embed(
         title=f"🌸 {member.name}'s Info 🌸", 
         description=f"Here's the info for **{member.name}**! 🥰",
-        color=discord.Color.blue()  # Soft blue color for a gentle vibe
+        color=discord.Color.blue()
     )
     
-    # Add user information fields
     embed.add_field(name="👤 User Name", value=member.name, inline=False)
     embed.add_field(name="📅 Joined at", value=member.joined_at.strftime("%B %d, %Y"), inline=False)
     embed.add_field(name="🆔 User ID", value=member.id, inline=False)
     
-    # Add a cute footer message
     embed.set_footer(text="Sending you cute info! 💖✨")
     
-    # Send the embed message
     await ctx.send(embed=embed)
 
 @bot.command(name="polladd")
@@ -957,25 +877,20 @@ async def polladd(ctx, question: str, *options):
         await ctx.send("Please provide at least two options. 💡")
         return
 
-    # Create a cute, colorful embed for the poll
     embed = discord.Embed(
         title="📝 New Poll! 📝",
         description=f"**{question}**\n",
-        color=discord.Color.purple()  # Soft purple for a fun vibe
+        color=discord.Color.purple()
     )
 
-    # Add the options to the embed
     reactions = ['🇦', '🇧', '🇨', '🇩', '🇪']
     for i, option in enumerate(options):
         embed.add_field(name=f"{reactions[i]} Option {i+1}", value=option, inline=False)
 
-    # Add a footer to encourage voting
     embed.set_footer(text="Vote with the reactions below! 💖")
 
-    # Send the embed message
     message = await ctx.send(embed=embed)
 
-    # Add reactions to the message
     for i in range(len(options)):
         await message.add_reaction(reactions[i])
         
