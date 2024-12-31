@@ -64,20 +64,24 @@ def setup_locklist(bot: commands.Bot):
     @bot.command(name="lock")
     async def lock(ctx, *characters: str):
         """Command to lock characters."""
+        # Check if the user already locked in 5 characters
         if ctx.author.id in locklist and len(locklist[ctx.author.id]) >= 5:
             await ctx.send("💖 Oops! You can only lock in **5 characters**! Please unlock some before locking new ones. ✨")
             return
 
-        already_locked = [char for char in characters if any(char in chars for chars in locklist.values())]
+        # Check if any of the characters are already locked by someone else
+        already_locked = [char for char in characters if any(char in chars for user_id, chars in locklist.items() if user_id != ctx.author.id)]
+        
         if already_locked:
             await ctx.send(f"🚫 These characters are already locked by someone else: {', '.join(already_locked)}. Please choose different ones! 💕")
             return
 
+        # Add the new characters to the user's locklist
         if ctx.author.id not in locklist:
             locklist[ctx.author.id] = []
 
         locklist[ctx.author.id].extend(characters)
-        locklist[ctx.author.id] = locklist[ctx.author.id][:5]
+        locklist[ctx.author.id] = locklist[ctx.author.id][:5]  # Limit to 5 characters
 
         # Save the updated locklist to the locklist channel
         await save_locklist_to_channel(ctx)
