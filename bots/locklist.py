@@ -37,7 +37,6 @@ async def save_locklist_to_channel(ctx):
         locklist_data = json.dumps(locklist, indent=4)
         
         # Send or edit a message with the locklist data
-        # Check if a locklist message already exists; otherwise, create one
         async for message in locklist_channel.history(limit=1):
             if message.author == ctx.guild.me and message.content.startswith("```json"):
                 # If message already exists, edit it
@@ -105,14 +104,21 @@ def setup_locklist(bot: commands.Bot):
         # Normalize character names to lowercase for consistency
         characters = [char.lower() for char in characters]
 
+        # Unlock only if the characters are currently locked by the user
+        unlocked = []
         for char in characters:
             if char in locklist[ctx.author.id]:
                 locklist[ctx.author.id].remove(char)
+                unlocked.append(char)
+
+        if not unlocked:
+            await ctx.send("🚫 You haven't locked any of these characters! Please check and try again. 💖")
+            return
 
         # Save the updated locklist to the locklist channel
         await save_locklist_to_channel(ctx)
 
-        await ctx.send(f"🎊 Successfully unlocked characters: {', '.join(characters)}! ✨")
+        await ctx.send(f"🎊 Successfully unlocked characters: {', '.join(unlocked)}! ✨")
 
     @bot.command(name="view_locklist")
     async def view_locklist(ctx):
