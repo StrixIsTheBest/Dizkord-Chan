@@ -90,35 +90,36 @@ def setup_locklist(bot: commands.Bot):
 
         await ctx.send(f"🎉 Success! You've locked in these characters: {', '.join(characters)}! 🥳")
 
-    @bot.command(name="unlock")
-    async def unlock(ctx, *characters: str):
-        """Command to unlock characters (only available to users with admin/mod permissions)."""
-        if not any(permission in [p.name.lower() for p in ctx.author.permissions_in(ctx.channel)] for permission in ["administrator", "manage_roles", "manage_messages"]):
-            await ctx.send("🚫 You do not have permission to unlock characters! Only admins or mods can unlock characters. 💕")
-            return
-        
-        if ctx.author.id not in locklist or not locklist[ctx.author.id]:
-            await ctx.send("😢 You haven't locked any characters yet! Please lock in some characters first. 💖")
-            return
+@bot.command(name="unlock")
+async def unlock(ctx, *characters: str):
+    """Command to unlock characters (only available to users with admin/mod permissions)."""
+    # Check if the user has admin or mod permissions using `guild_permissions`
+    if not any(permission in ctx.author.guild_permissions for permission in ["administrator", "manage_roles", "manage_messages"]):
+        await ctx.send("🚫 You do not have permission to unlock characters! Only admins or mods can unlock characters. 💕")
+        return
 
-        # Normalize character names to lowercase for consistency
-        characters = [char.lower() for char in characters]
+    if ctx.author.id not in locklist or not locklist[ctx.author.id]:
+        await ctx.send("😢 You haven't locked any characters yet! Please lock in some characters first. 💖")
+        return
 
-        # Unlock only if the characters are currently locked by the user
-        unlocked = []
-        for char in characters:
-            if char in locklist[ctx.author.id]:
-                locklist[ctx.author.id].remove(char)
-                unlocked.append(char)
+    # Normalize character names to lowercase for consistency
+    characters = [char.lower() for char in characters]
 
-        if not unlocked:
-            await ctx.send("🚫 You haven't locked any of these characters! Please check and try again. 💖")
-            return
+    # Unlock only if the characters are currently locked by the user
+    unlocked = []
+    for char in characters:
+        if char in locklist[ctx.author.id]:
+            locklist[ctx.author.id].remove(char)
+            unlocked.append(char)
 
-        # Save the updated locklist to the locklist channel
-        await save_locklist_to_channel(ctx)
+    if not unlocked:
+        await ctx.send("🚫 You haven't locked any of these characters! Please check and try again. 💖")
+        return
 
-        await ctx.send(f"🎊 Successfully unlocked characters: {', '.join(unlocked)}! ✨")
+    # Save the updated locklist to the locklist channel
+    await save_locklist_to_channel(ctx)
+
+    await ctx.send(f"🎊 Successfully unlocked characters: {', '.join(unlocked)}! ✨")
 
     @bot.command(name="view_locklist")
     async def view_locklist(ctx):
