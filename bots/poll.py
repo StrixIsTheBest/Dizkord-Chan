@@ -50,6 +50,10 @@ def setup_poll(bot: commands.Bot):
             await ctx.send(embed=error_embed)
             return
 
+        # Calculate the poll's end time as Unix timestamp
+        end_time = datetime.utcnow() + timedelta(seconds=time_seconds)
+        unix_timestamp = int(end_time.timestamp())
+
         # Create poll
         embed = discord.Embed(
             title="🌸 Dizkord-Chan Poll Time! 🌸",
@@ -57,7 +61,7 @@ def setup_poll(bot: commands.Bot):
                         "\n".join([f"{i+1}️⃣ {option}" for i, option in enumerate(options)]),
             color=0xC546FF
         )
-        embed.set_footer(text=f"Poll ends in {duration}! Powered by Dizkord-Chan ✨")
+        embed.set_footer(text=f"Poll ends in <t:{unix_timestamp}:R>! Powered by Dizkord-Chan ✨")
         poll_message = await ctx.send(embed=embed)
 
         # Add reactions for options
