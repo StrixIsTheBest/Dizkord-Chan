@@ -2,9 +2,11 @@ import asyncio
 import random
 import discord
 from discord.ext import commands
+from datetime import datetime, timedelta
 
 def setup_giveaway(bot: commands.Bot):
     @bot.command(name="giveaway")
+    @commands.has_permissions(manage_messages=True)
     async def giveaway(ctx):
         """
         Creates a giveaway event with Dizkord-Chan's aesthetic.
@@ -73,28 +75,31 @@ def setup_giveaway(bot: commands.Bot):
             await ctx.send(embed=error_embed)
             return
 
+        # Calculate end time
+        end_time = datetime.utcnow() + timedelta(seconds=time_seconds)
+        unix_timestamp = int(end_time.timestamp())
+
         # Send the giveaway announcement
         giveaway_embed = discord.Embed(
             title="🎉 Giveaway Time! 🎉",
-            description=(
-                f"🌟 **Prize:** {prize}\n"
-                f"💬 React with 🎉 to enter!\n"
-                f"⏳ **Ends in:** {time}\n\n"
-                f"✨ Hosted by: {ctx.author.mention}"
-            ),
+            description=(f"🌟 **Prize:** {prize}\n"
+                         f"💬 React with 🎉 to enter!\n"
+                         f"⏳ **Ends in:** <t:{unix_timestamp}:R>\n\n"
+                         f"✨ Hosted by: {ctx.author.mention}"),
             color=0xC546FF
         )
         giveaway_embed.set_footer(text="Good luck, everyone! 🍀 Powered by Dizkord-Chan")
         giveaway_message = await channel.send(embed=giveaway_embed)
         await giveaway_message.add_reaction("🎉")
 
+        # Wait for the giveaway to end
         await asyncio.sleep(time_seconds)
 
         # Fetch the message again to get reactions
         giveaway_message = await channel.fetch_message(giveaway_message.id)
         reaction = discord.utils.get(giveaway_message.reactions, emoji="🎉")
 
-        if reaction and reaction.count > 1:  # Reaction count includes the bot's reaction
+        if reaction and reaction.count > 1:
             users = [user async for user in reaction.users() if not user.bot]
             winner = random.choice(users)
             winner_embed = discord.Embed(
@@ -111,6 +116,19 @@ def setup_giveaway(bot: commands.Bot):
                 color=0xC546FF
             )
             await channel.send(embed=no_winner_embed)
+
+    @giveaway.error
+    async def giveaway_error(ctx, error):
+        """
+        Handle errors for the giveaway command.
+        """
+        if isinstance(error, commands.MissingPermissions):
+            error_embed = discord.Embed(
+                title="❌ Insufficient Permissions",
+                description="You need the **Manage Messages** permission to use this command.",
+                color=0xC546FF
+            )
+            await ctx.send(embed=error_embed)
 
     def parse_duration(duration: str) -> int:
         """
