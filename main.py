@@ -61,7 +61,7 @@ async def quote(interaction: discord.Interaction):
     embed = discord.Embed(
         title="🎬 Random Anime Quote 🎬",
         description=f"\"{quote}\"\n- {character}, *{anime}*",
-        color=discord.Color.blue()
+        color=0xC546FF
     )
 
     await interaction.followup.send(embed=embed)
@@ -216,7 +216,7 @@ async def mute(ctx, user: discord.Member, *, reason="Being too loud~ 🌸"):
         embed = discord.Embed(
             title="🔇 Muted!",
             description=f"{user.mention} has been silenced! Reason: {reason}",
-            color=0xFFC0CB
+            color=0xC546FF
         )
         embed.set_image(
             url="https://cdn.discordapp.com/attachments/1320720271635906619/1320994714882805802/aa029ffbfe42e86802b9df154022ba23.gif?ex=676b9fb2&is=676a4e32&hm=65fae9806b708dd3d2ddd8378a75cde64d40c9ff50b5fea93b4c87c954d41206&"
@@ -237,7 +237,7 @@ async def unmute(ctx, user: discord.Member):
                 embed = discord.Embed(
                     title="🔊 Unmuted!",
                     description=f"{user.mention}, you’re free to speak again! Behave, okay? 🌸✨",
-                    color=0xFFC0CB
+                    color=0xC546FF
                 )
                 embed.set_image(
                     url="https://cdn.discordapp.com/attachments/1320720271635906619/1320994767395487785/Gag.gif?ex=676b9fbf&is=676a4e3f&hm=ea7fd15ac1800229850827c58a8a1be724ed337f7572330df0eaf891c2b9744f&"
@@ -249,7 +249,7 @@ async def unmute(ctx, user: discord.Member):
                 embed = discord.Embed(
                     title="🤔 Not Muted!",
                     description=f"Umm, {user.mention} wasn’t muted, silly~ 💕",
-                    color=0xFFC0CB
+                    color=0xC546FF
                 )
                 embed.set_footer(text="✨ Dizkord-Chan ✨")
 
@@ -274,7 +274,7 @@ async def kick(ctx, user: discord.Member = None, *, reason="Breaking the rules~ 
 
         embed = discord.Embed(
             description=f"{user.mention} has been kicked out of the server! 😭 Reason: {reason}",
-            color=0xFF0000
+            color=0xC546FF
         )
         embed.set_image(url=gif_to_send)
 
@@ -297,7 +297,7 @@ async def ban(ctx, user: discord.Member = None, *, reason="Breaking the rules~ �
 
         embed = discord.Embed(
             description=f"Ah! {user.mention} has been banned from the server~ 🌟 Reason: {reason} *nya~*",
-            color=0xFFB6C1
+            color=0xC546FF
         )
         embed.set_image(url=gif_to_send)
 
@@ -362,7 +362,7 @@ async def tease(ctx):
         tease = random.choice(tease_phrases)
         gif = random.choice(tease_gifs)
 
-        embed = discord.Embed(description=tease, color=0xFF69B4)
+        embed = discord.Embed(description=tease, color=0xC546FF)
         embed.set_image(url=gif)
         await ctx.send(embed=embed)
 
@@ -403,35 +403,32 @@ class PaginationView(discord.ui.View):
 
     @discord.ui.button(label="Close", style=discord.ButtonStyle.danger)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.message.delete()  # Deletes the message with the buttons
+        await interaction.message.delete()
 
     @discord.ui.button(label="Back", style=discord.ButtonStyle.gray)
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # Revert to the category selection view
         embed = discord.Embed(
             title="✨ Dizkord-Chan's Cute Commands ✨",
             description="Choose a category to view commands:",
-            color=0xFFC0CB
+            color=0xC546FF
         )
         embed.set_thumbnail(
             url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&"
         )
         embed.set_footer(text="Dizkord-Chan | Serving you with love 💖")
 
-        # Recreate the category selection buttons
         view = CommandView()
         view.add_item(discord.ui.Button(label="Fun", style=discord.ButtonStyle.blurple, custom_id="fun"))
         view.add_item(discord.ui.Button(label="Moderation", style=discord.ButtonStyle.green, custom_id="moderation"))
         view.add_item(discord.ui.Button(label="Utility", style=discord.ButtonStyle.gray, custom_id="utility"))
 
-        # Send the response with the updated embed and buttons
         await interaction.response.edit_message(embed=embed, view=view)
 
     async def update_embed(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="🎉 Fun Commands",
             description=self.pages[self.current_page],
-            color=0xFFC0CB
+            color=0xC546FF
         )
         embed.set_footer(text=f"Page {self.current_page + 1}/{len(self.pages)} | Use the buttons below to navigate.")
         await interaction.response.edit_message(embed=embed, view=self)
@@ -452,7 +449,7 @@ async def on_interaction(interaction: discord.Interaction):
             embed = discord.Embed(
                 title="🎉 Fun Commands",
                 description=fun_pages[0],
-                color=0xFFC0CB
+                color=0xC546FF
             )
             embed.set_footer(text="Page 1/3 | Use the buttons below to navigate.")
 
@@ -463,7 +460,7 @@ async def on_interaction(interaction: discord.Interaction):
             embed = discord.Embed(
                 title="🔨 Moderation Commands",
                 description="Commands to manage your server efficiently:",
-                color=0xFFC0CB
+                color=0xC546FF
             )
             embed.add_field(name="🔇 `%mute <user>`", value="Mutes a user in the server.", inline=False)
             embed.add_field(name="🔊 `%unmute <user>`", value="Unmutes a user in the server.", inline=False)
@@ -479,7 +476,7 @@ async def on_interaction(interaction: discord.Interaction):
             embed = discord.Embed(
                 title="🛠️ Utility Commands",
                 description="Useful tools for your server:",
-                color=0xFFC0CB
+                color=0xC546FF
             )
             embed.add_field(name="❤️ `%love`", value="Sends a heartful message of love.", inline=False)
             embed.add_field(name="🧹 `%purge <number>`", value="Deletes a specified number of messages.", inline=False)
@@ -502,7 +499,7 @@ async def cmds(ctx):
     embed = discord.Embed(
         title="✨ Dizkord-Chan's Cute Commands ✨",
         description="Choose a category to view commands:",
-        color=0xFFC0CB
+        color=0xC546FF
     )
     embed.set_thumbnail(
         url="https://cdn.discordapp.com/attachments/1320720271304560707/1320751935426662480/wdsca9rrtly41.png?ex=676b6657&is=676a14d7&hm=d26b9cb8e5ef4dfe9d806ae0982641b4f0840f939ef56540d33a1b37ee45f9a5&"
@@ -549,7 +546,7 @@ async def spank(ctx, user: discord.Member = None):
 
         embed = discord.Embed(
             description=response,
-            color=0xFFC0CB
+            color=0xC546FF
         )
         embed.set_image(url=gif_url)
 
@@ -584,7 +581,7 @@ async def hug(ctx, user: discord.Member = None):
 
                             embed = discord.Embed(
                                 description=f"Aww, {user.mention}, here’s a big warm hug from {ctx.author.mention}! 🤗💖",
-                                color=0xFF69B4
+                                color=0xC546FF
                             )
                             embed.set_image(url=selected_gif)
                             await ctx.send(embed=embed)
@@ -603,7 +600,7 @@ async def kiss(ctx, user: discord.Member = None):
             return
 
         gif = random.choice(kiss_gifs)
-        embed = discord.Embed(description=f"MWAH! 💋 {user.mention}, you’re so cute! 😘💖", color=0xFF69B4)
+        embed = discord.Embed(description=f"MWAH! 💋 {user.mention}, you’re so cute! 😘💖", color=0xC546FF)
         embed.set_image(url=gif)
         await ctx.send(embed=embed)
 
@@ -624,7 +621,7 @@ async def pat(ctx, user: discord.Member = None):
 
         embed = discord.Embed(
             description=f"Pat pat! 🐾 {user.mention}, you’re such a good boy/girl! 💕✨",
-            color=0xFFB6C1
+            color=0xC546FF
         )
         embed.set_image(url=gif_to_send)
 
@@ -649,7 +646,7 @@ async def slap(ctx, user: discord.Member = None):
 
         embed = discord.Embed(
             description=f"Slap! 💥 {user.mention}, you’re too cheeky! 💋😈",
-            color=0xFF69B4
+            color=0xC546FF
         )
         embed.set_image(url=gif_to_send)
 
@@ -662,7 +659,7 @@ async def love(ctx):
 
     embed = discord.Embed(
         description=love_message,
-        color=0xFFC0CB
+        color=0xC546FF
     )
     embed.set_image(url="https://cdn.discordapp.com/attachments/1320720271304560707/1320753564909441076/832d6e5b6d9392597e1fbd9eb0f99e5c.gif?ex=676abf1c&is=67696d9c&hm=3eee52eedf2a4672bace43fbe17b766569d94a1223e24e4301b94f4d0c73e9ee&")
 
@@ -696,7 +693,7 @@ async def dance(ctx):
 
     embed = discord.Embed(
         description=f"Let's dance! 💃🕺",
-        color=0xFF69B4
+        color=0xC546FF
     )
     embed.set_image(url=gif_to_send)
 
@@ -768,7 +765,7 @@ async def _8ball(ctx, *, question):
     embed = discord.Embed(
         title="🔮 Magic 8-Ball ✨",
         description=f"**Question:** {question}\n**Answer:** {answer}",
-        color=discord.Color.blue()
+        color=0xC546FF
     )
 
     embed.set_footer(text="✨ Ask another question? ✨")
@@ -794,7 +791,7 @@ async def rps(ctx, choice):
     embed = discord.Embed(
         title="✂️ Rock, Paper, Scissors! ✋",
         description=result,
-        color=discord.Color.purple()
+        color=0xC546FF
     )
 
     embed.set_footer(text="Play again? 💖")
@@ -810,7 +807,7 @@ async def uptime(ctx):
     embed = discord.Embed(
         title="⏰ Bot Uptime! ⏰",
         description=f"**The bot has been running for**\n{int(minutes)} minutes and {int(seconds)} seconds! ✨",
-        color=discord.Color.pink()
+        color=0xC546FF
     )
     
     embed.set_footer(text="Thank you for being with us! 💕")
@@ -824,7 +821,7 @@ async def serverinfo(ctx):
     embed = discord.Embed(
         title=f"🌸 {guild.name} Server Info 🌸", 
         description=f"Here's some info about the **{guild.name}** server! 🥳💖",
-        color=discord.Color.purple()
+        color=0xC546FF
     )
     
     embed.add_field(name="💖 Server Name", value=guild.name, inline=False)
@@ -843,7 +840,7 @@ async def ping(ctx):
     embed = discord.Embed(
         title="🏓 Ping Pong! 🏓", 
         description=f"**Pong!** 🥳💫",
-        color=discord.Color.pink()
+        color=0xC546FF
     )
     
     embed.add_field(name="⏱️ Latency", value=f"{latency}ms", inline=False)
@@ -860,7 +857,7 @@ async def userinfo(ctx, member: discord.Member = None):
     embed = discord.Embed(
         title=f"🌸 {member.name}'s Info 🌸", 
         description=f"Here's the info for **{member.name}**! 🥰",
-        color=discord.Color.blue()
+        color=0xC546FF
     )
     
     embed.add_field(name="👤 User Name", value=member.name, inline=False)
@@ -880,7 +877,7 @@ async def polladd(ctx, question: str, *options):
     embed = discord.Embed(
         title="📝 New Poll! 📝",
         description=f"**{question}**\n",
-        color=discord.Color.purple()
+        color=0xC546FF
     )
 
     reactions = ['🇦', '🇧', '🇨', '🇩', '🇪']
