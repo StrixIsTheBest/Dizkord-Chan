@@ -762,22 +762,27 @@ async def dance(ctx):
 user_birthday = {}
 start_time = time.time()
 
-def get_meme():
-    response = requests.get("https://api.imgflip.com/get_memes")
-    if response.status_code == 200:
-        meme_data = response.json()
-        meme_list = meme_data['data']['memes']
-        # Randomly choose a meme from the list
-        selected_meme = random.choice(meme_list)
-        meme_url = selected_meme['url']
-        return meme_url
-    else:
-        return "Could not fetch meme."
+def get_completed_meme():
+    # Fetch memes from a popular subreddit
+    url = "https://www.reddit.com/r/memes/hot.json"
+    headers = {"User-Agent": "CompletedMemeBot/1.0"}
+    response = requests.get(url, headers=headers)
 
-API_KEY = "live_nUG00cmyCRW9ppf5zWojQr2E8IZhhOYwvBiV4nQIzZ8p1uO9f5S0McGAxm6v8edX"
-headers = {
-    "x-api-key": API_KEY
-}
+    if response.status_code == 200:
+        memes = response.json()
+        posts = memes['data']['children']
+        
+        # Randomly select a post
+        meme = random.choice(posts)
+        meme_url = meme['data']['url']
+        
+        # Ensure it's an image
+        if meme_url.endswith(('.jpg', '.png', '.gif')):
+            return meme_url
+        else:
+            return "No valid meme found."
+    else:
+        return "Failed to fetch memes."
 
 @bot.command()
 async def cat(ctx):
@@ -810,8 +815,11 @@ def get_dog():
 
 @bot.command(name="meme")
 async def meme(ctx):
-    meme_url = get_meme()
-    await ctx.send(meme_url)
+    meme_url = get_completed_meme()
+    if "http" in meme_url:  # Check if a valid URL was returned
+        await ctx.send(meme_url)
+    else:
+        await ctx.send("Oops! Couldn't fetch a meme right now. Try again later.")
 
 @bot.command(name="dog")
 async def dog(ctx):
