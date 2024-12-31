@@ -13,6 +13,7 @@ from datetime import datetime
 import bots.webserver
 from bots.quote import start_quote_task
 from bots.giveaway import setup_giveaway
+from bots.poll import setup_poll
 from dotenv import load_dotenv
 from bots.chat import AnimeChat
     
@@ -181,6 +182,7 @@ async def on_ready():
     bot.loop.create_task(bots.webserver.ping_bot())
     start_quote_task(bot, channel_id)
     setup_giveaway(bot)
+    setup_poll(bot)
     check_birthdays.start()
     await bot.add_cog(AnimeChat(bot))
     
@@ -469,9 +471,10 @@ async def on_interaction(interaction: discord.Interaction):
             embed.add_field(name="🚪 `%kick <user>`", value="Kicks a user out of the server.", inline=False)
             embed.add_field(name="⚔️ `%ban <user>`", value="Bans a user from the server.", inline=False)
             embed.add_field(name="🔓 `%unban <user>`", value="Unbans a user.", inline=False)
+            embed.add_field(name="🎉 `%giveaway`", value="Starts a Giveaway in the desired channel.", inline=False)
             embed.add_field(name="👮‍♀️👮‍♂️ `%jail <user>`", value="Jails a user.", inline=False)
             embed.add_field(name="🕊 `%release <user>`", value="Releases a user.", inline=False)
-            embed.add_field(name="📊 `%polladd [question] [option1] [option2] ...`", value="Create a poll with multiple options.", inline=False)
+            embed.add_field(name="📊 `%polladd <question> <duration> <option1> <option2> [<option3> <option4> ...]`", value="Create a poll with multiple options.", inline=False)
             await interaction.response.edit_message(embed=embed)
 
         elif custom_id == "utility":
@@ -869,29 +872,6 @@ async def userinfo(ctx, member: discord.Member = None):
     embed.set_footer(text="Sending you cute info! 💖✨")
     
     await ctx.send(embed=embed)
-
-@bot.command(name="polladd")
-async def polladd(ctx, question: str, *options):
-    if len(options) < 2:
-        await ctx.send("Please provide at least two options. 💡")
-        return
-
-    embed = discord.Embed(
-        title="📝 New Poll! 📝",
-        description=f"**{question}**\n",
-        color=0xC546FF
-    )
-
-    reactions = ['🇦', '🇧', '🇨', '🇩', '🇪']
-    for i, option in enumerate(options):
-        embed.add_field(name=f"{reactions[i]} Option {i+1}", value=option, inline=False)
-
-    embed.set_footer(text="Vote with the reactions below! 💖")
-
-    message = await ctx.send(embed=embed)
-
-    for i in range(len(options)):
-        await message.add_reaction(reactions[i])
         
 # Run the bot
 bot.run(DISCORD_TOKEN)
