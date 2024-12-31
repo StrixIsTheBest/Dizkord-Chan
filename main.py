@@ -14,7 +14,6 @@ import bots.webserver
 from bots.quote import start_quote_task
 from bots.giveaway import setup_giveaway
 from bots.poll import setup_poll
-from bots.locklist import setup_locklist
 from dotenv import load_dotenv
 from bots.chat import AnimeChat
     
@@ -184,7 +183,6 @@ async def on_ready():
     start_quote_task(bot, channel_id)
     setup_giveaway(bot)
     setup_poll(bot)
-    setup_locklist(bot)
     check_birthdays.start()
     await bot.add_cog(AnimeChat(bot))
     
