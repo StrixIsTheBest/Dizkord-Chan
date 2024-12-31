@@ -762,27 +762,19 @@ async def dance(ctx):
 user_birthday = {}
 start_time = time.time()
 
-def get_completed_meme():
-    # Fetch memes from a popular subreddit
-    url = "https://www.reddit.com/r/memes/hot.json"
-    headers = {"User-Agent": "CompletedMemeBot/1.0"}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        memes = response.json()
-        posts = memes['data']['children']
-        
-        # Randomly select a post
-        meme = random.choice(posts)
-        meme_url = meme['data']['url']
-        
-        # Ensure it's an image
-        if meme_url.endswith(('.jpg', '.png', '.gif')):
+def get_meme():
+    try:
+        # API endpoint for random memes
+        url = "https://meme-api.com/gimme"
+        response = requests.get(url)
+        if response.status_code == 200:
+            meme_data = response.json()
+            meme_url = meme_data.get("url")
             return meme_url
         else:
-            return "No valid meme found."
-    else:
-        return "Failed to fetch memes."
+            return "Oops! Failed to fetch meme."
+    except Exception as e:
+        return f"Oops! Error: {e}"
 
 @bot.command()
 async def cat(ctx):
@@ -791,7 +783,7 @@ async def cat(ctx):
     
     try:
         # Get a random cat image from The Cat API
-        response = requests.get(url, headers=headers)
+        response = requests.get(url)
         
         # Check if the response is successful
         if response.status_code == 200:
@@ -815,11 +807,8 @@ def get_dog():
 
 @bot.command(name="meme")
 async def meme(ctx):
-    meme_url = get_completed_meme()
-    if "http" in meme_url:  # Check if a valid URL was returned
-        await ctx.send(meme_url)
-    else:
-        await ctx.send("Oops! Couldn't fetch a meme right now. Try again later.")
+    meme_url = get_meme()
+    await ctx.send(meme_url)
 
 @bot.command(name="dog")
 async def dog(ctx):
