@@ -47,9 +47,9 @@ async def save_locklist_to_channel(ctx):
         # If no existing locklist message, send a new one
         await locklist_channel.send(f"```json\n{locklist_data}\n```")
 
-def load_locklist_from_channel(ctx):
+async def load_locklist_from_channel(ctx):
     """Load the locklist from the locklist channel after bot restart."""
-    locklist_channel = get_locklist_channel(ctx)
+    locklist_channel = await get_locklist_channel(ctx)
     if locklist_channel:
         async for message in locklist_channel.history(limit=5):
             if message.author == ctx.guild.me and message.content.startswith("```json"):
@@ -125,6 +125,10 @@ def setup_locklist(bot: commands.Bot):
     @bot.event
     async def on_ready():
         print(f"{bot.user} has connected to Discord!")
-        locklist = load_locklist_from_channel(ctx)
-        if locklist:
+        # Assuming the context is passed here
+        ctx = await bot.get_context(bot.user)
+        loaded_locklist = await load_locklist_from_channel(ctx)
+        if loaded_locklist:
+            global locklist
+            locklist = loaded_locklist
             print("Locklist loaded from the channel.")
