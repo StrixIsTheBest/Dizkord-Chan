@@ -575,28 +575,23 @@ async def hug(ctx, user: discord.Member = None):
                             await ctx.send(embed=embed)
                         else:
                             hug_gifs = [
-                                "https://cdn.discordapp.com/attachments/1320720271635906619/1320998251276537886/336da064cd092e30d2a7db6cd052515e.gif?ex=676ba2fe&is=676a517e&hm=a40b1a121bed4fd84e0563c08a5435216bc010c166970140e7c86fc90ef47e1b&",
-                                "https://cdn.discordapp.com/attachments/1320720271635906619/1320998251624796201/anime-boy-wants-cuddle-v5awreez6ggjoznf.gif?ex=676ba2fe&is=676a517e&hm=610921e26ede9c22d264f3a02e9d77a118c5f896a08f8a462b081d37d3d6174b&",
-                                "https://cdn.discordapp.com/attachments/1320720271635906619/1320827799514386492/195ec8f45c728b30e988b98764bd293c.gif?ex=676b043f&is=6769b2bf&hm=f3f2cd4cb0fa83dec67adfb7a17a8d991d17597c1b50bd7f15d8b38c6f0e3441&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1321091843580231784/tenor_2.gif?ex=676bfa28&is=676aa8a8&hm=3d7e697b389496f80cd4d4bb9dcd66b01ef19819e6c21483d742ae77358bd45b&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1321091844028895253/tenor_3.gif?ex=676bfa28&is=676aa8a8&hm=faec41469c621ff49b151f66ee6c3c79c8ff2da1a0cda860aa4837075b8be7af&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750436749672468/image.gif?ex=6779497c&is=6777f7fc&hm=aa70b1e81d0e0abbff40fc195458175c922e38c5c7f4590d27f9777a486851ad&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750458614579231/image.gif?ex=67794982&is=6777f802&hm=9f89af2335ed5167da22bc77e3db385eade2d6bf9de6b56a09c74911aa51ef73&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750466755727431/image.gif?ex=67794983&is=6777f803&hm=9c9bea7e5fb99d755ea7b0524578745f698e9df076416f6ffcdd7502ce82fc8c&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750480664166481/image.gif?ex=67794987&is=6777f807&hm=dc73d0a0cd9060777155af584c262c58e466d59cbdf3bca296771cf3a102c0e9&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750489262362676/image.gif?ex=67794989&is=6777f809&hm=30378f59f37fef12df7b0a99927850419e0019fd427ceb9d53ca9abda83de74d&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750498443563150/image.gif?ex=6779498b&is=6777f80b&hm=a73c626a2c90988059585a769787bff7a31d0a3b787c2e30598bbbb5d0fe51b4&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750506333044818/image.gif?ex=6779498d&is=6777f80d&hm=c86a43aee904af84a40892a4a46809f0dbfc4596c06de74a61f574d2fede6bf2&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750520346480732/image.gif?ex=67794990&is=6777f810&hm=86f318c6311c0490794606f8ea4cdaeac42a9a87f81771d5cea607104e66ae73&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750527334187081/image.gif?ex=67794992&is=6777f812&hm=f6351e28fbbe87336df34abfe40e1e8d3a9808acd6b6c63cfdb1a4a767185571&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750536070664266/image.gif?ex=67794994&is=6777f814&hm=2bddcd2f202efa7d79e3d11993bfd99d4512c0997fae27d44f36a810bab238e2&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750545851912282/image.gif?ex=67794996&is=6777f816&hm=3092813c86f2d2c1b7dfb1a4cc7ed968be3ef4c70b568acde82c51e731068aaa&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750555926757416/image.gif?ex=67794999&is=6777f819&hm=821d90ef8b8c9a4e6fd38f81d24aba080f89bda4dea4bc2dc950a36e4fe1479e&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750564143141007/image.gif?ex=6779499b&is=6777f81b&hm=37a2daec4938f7674bb214a742332818635663da7098e6500828b7efd65fcad5&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750575098658838/image.gif?ex=6779499d&is=6777f81d&hm=1a150546f04c0fd9115ae5e6eb4d1c0731ea7ab26106ee6cde0af4ff027337d9&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750581604159498/image.gif?ex=6779499f&is=6777f81f&hm=bd01e1341837ac4caf6bb66262aa34960e1759001201df077d0725a1dc50f481&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750602479079475/image.gif?ex=677949a4&is=6777f824&hm=f546f6f42ced4930e26c1537c3ffee102d654fb8979e847afb17d098fd34be9c&",
-                                "https://cdn.discordapp.com/attachments/1320720273393061950/1324750610385600644/image.gif?ex=677949a6&is=6777f826&hm=e8cdfe689575e6fa6fd3fc78a01dd88e007cda945883606a05bad4f7f6186932&"
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772170643013704/image.gif?ex=67795dba&is=67780c3a&hm=fd4db37e349fa7a247004321c99daec0fdeffbf520794a94ea9a00a0f4cb400f&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772186233245776/image.gif?ex=67795dbe&is=67780c3e&hm=1247fdc9caacb550d6a3510a64c3bf839d13f4091558a98b1ac0a3ccf5787c69&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772198585471057/image.gif?ex=67795dc1&is=67780c41&hm=1cd9857e79027166684629d64bba27fc4452acb1d2551770aea7d0d4b81c560e&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772209167827057/image.gif?ex=67795dc3&is=67780c43&hm=1325b127811e0384052855039ec5448f4ff2c2daed42612ffa06c11c5b9de97a&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772228977524776/image.gif?ex=67795dc8&is=67780c48&hm=23c34003c798f06369dfbb528314fa0c98ca3ced24ab3b03c7645f6009fb267c&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772239719006342/image.gif?ex=67795dcb&is=67780c4b&hm=e3863684668fc30b83841d352d19fa5168917a5899b14811387b7ecde1f86cdd&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772247654629467/image.gif?ex=67795dcc&is=67780c4c&hm=42da043b259401324a79134a90605f54e20bc9df210bbd18214694554807082e&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772258970861578/image.gif?ex=67795dcf&is=67780c4f&hm=ed792a940df9f23d399bd940914d4923933090de72f052718507a3a8aa9627e7&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772267410067517/image.gif?ex=67795dd1&is=67780c51&hm=20943cc26ffc8cf5fa278c025b24640d7b886ca1badf83ef78f2d9209fbdd81f&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772275479642132/image.gif?ex=67795dd3&is=67780c53&hm=64586fb94fa2331656e878bd06e537bac366690fbf882ae9a198cf37a18f9fa7&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772283012612157/image.gif?ex=67795dd5&is=67780c55&hm=dc98318f2a79175fea75918b42ee5d8cf967ccd5ce2a43d91722095b4001e58b&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772293393649784/image.gif?ex=67795dd7&is=67780c57&hm=21dad58e68e4fc09f6a18611870098bd177b3f7f25537da548f23be5fe1f502f&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772300972625940/image.gif?ex=67795dd9&is=67780c59&hm=4eadd2a48e8923bdb41dd56e1957eb98b6d21c96d42b4d989298e9c12ee1a866&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772310774972487/image.gif?ex=67795ddb&is=67780c5b&hm=de71e4cd3344d92007de476039fa14b814296b2330191ac285a40ebe0b8f1b13&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772318471389184/image.gif?ex=67795ddd&is=67780c5d&hm=07798268d444442b5acaff096e3ced8200804c0a830e18ac071c557665655b82&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772328789508176/image.gif?ex=67795de0&is=67780c60&hm=82452bf5541191733c5810be79aca07083205694f885ef083a0836668b696a58&",
+                                "https://cdn.discordapp.com/attachments/1324770554187616347/1324772335517175880/image.gif?ex=67795de1&is=67780c61&hm=cde10f0b635eb1b50715c5b787449552875ffe8b119087917e37ec227d9a0ad1&"
                             ]
 
                             selected_gif = random.choice(hug_gifs)
@@ -612,23 +607,20 @@ async def hug(ctx, user: discord.Member = None):
 @bot.command(name="kiss")
 async def kiss(ctx, user: discord.Member = None):
         kiss_gifs = [
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1320998378963730492/OK6W_koKDTOqqqLDbIoPAs121R2UXd_2WR9_uOI5fRE.gif?ex=676ba31c&is=676a519c&hm=71aaaf61e22bffa0863c72eded76846028ba347db24bb2d35899c224d6e77d5d&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1321091844951638109/tenor.gif?ex=676bfa28&is=676aa8a8&hm=db84bdcf6a888bddd942483a3a2115f4b2259124eb163d1ff59a4eaa34d17d1e&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1321091843068399657/tenor_1.gif?ex=676bfa28&is=676aa8a8&hm=ef6eddc4d5c05456c1a6ee0de22283aee44f00350d472bb3f8e06236bd75bef6&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749915880165456/image.gif?ex=67794900&is=6777f780&hm=db32ed4385f877e13344b0eef22df15cb2da99e5f3de3e3e90560a19036727e5&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749921932283958/image.gif?ex=67794902&is=6777f782&hm=571dae36cf7e28bfb917ba5fcd4e2604bf573ebe01c41de85c72ed35568e827d&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749928672657614/image.gif?ex=67794903&is=6777f783&hm=4b8e55bae6d951b0a90b9c0027cb130132adc7bf1406647e08e4f4456c22e79f&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749939011616879/image.gif?ex=67794906&is=6777f786&hm=1c53da5b7a98b9faee681caab13d628ded5b43fbd5f24e1985ffaa76c9bc8175&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749948272640000/image.gif?ex=67794908&is=6777f788&hm=aeeb56c596c87a28a9202ec81f1e459d3c6a12396bd49b175f272168ea429356&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749958376718368/image.gif?ex=6779490a&is=6777f78a&hm=0341d1f4e800e9027baa8181e92db4debeb2cfec72ba16c25f07e59a6c39055b&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749966941360158/image.gif?ex=6779490c&is=6777f78c&hm=a6d6bcaabe5cbacdf9962e817e3a60989209c095a52dce458eb06b2cef6f2732&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749976265424989/image.gif?ex=6779490f&is=6777f78f&hm=048e8516ebcba780e518bcf24af030c8e824e13e26eb5a60d911742bac1d8f0a&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749984758890507/image.gif?ex=67794911&is=6777f791&hm=c1cbbd0bff0ba14889126f3977167e70828512f9499c837fb85af17f36851b43&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749991268319313/image.gif?ex=67794912&is=6777f792&hm=2124400362597e7870d0761fe56d205010ea69adad5e4135715a0f9bff376872&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324750003402571908/image.gif?ex=67794915&is=6777f795&hm=b323e109a852ba8488195c3d673a24d082d7ba4b8e18d6bd436f1857ef6ccc35&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324750014714478663/image.gif?ex=67794918&is=6777f798&hm=f91cb30ad2e0ee5afd053dc2ab4798974b53b42189f14dd8ec3315181a959c6f&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324750029918965832/image.gif?ex=6779491b&is=6777f79b&hm=82c6d91d5aef870febc9cd18308ea2f976ada0ef32f6c28a4678bc97b55c19a7&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324750177352941619/image.gif?ex=6779493e&is=6777f7be&hm=cbb19053396e1e9d2d290258b1a7ae79e52106dbdccc8f0aacf8287f0a8ebed4&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771891373801593/image.gif?ex=67795d77&is=67780bf7&hm=cb96e3d17e43c842ce951fa399e859b5ea528623e6ab2eb157e4b41df87a03cb&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771903755386911/image.gif?ex=67795d7a&is=67780bfa&hm=45de810d196a29536808b637fcd7472f14a66befc605be7696f5524f271caa4c&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771909597921351/image.gif?ex=67795d7c&is=67780bfc&hm=792ed0ce0c7f6bd3410c74ce9c7171a1ac34488fdcafc034abaa2dcba9465a33&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771915834982441/image.gif?ex=67795d7d&is=67780bfd&hm=f5ce04510198de99000c244f278f95c5e00cd9f9d3a6fd688de3dddbc02cd84a&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771929441308704/image.gif?ex=67795d81&is=67780c01&hm=a5bf530bfa56a1675e1ace2c92a5a377cdd2eda214bcd161c280f514c67f45ac&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771938689745078/image.gif?ex=67795d83&is=67780c03&hm=a9851f98a6225c0e6baa60a38390760e538500fd6e01236852273d0dd52b5f60&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771945052508160/image.gif?ex=67795d84&is=67780c04&hm=27b8e04ffe0ea1f92278302d4e72820ed3bff590b5d39fa6f143527320b17d18&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771953520672850/image.gif?ex=67795d86&is=67780c06&hm=a989e48839edd8888ae8cb5ffbff9c0bea9e733ce85e090372fe96103d46a336&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771963419230288/image.gif?ex=67795d89&is=67780c09&hm=bb4344e6386c22aa894b273440d0086742452cc1a0c4e52371f8adc83e4e93b2&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771971237675089/image.gif?ex=67795d8b&is=67780c0b&hm=b389b8b9f0d7f427f223b2111aadb1f44b41c3301a6ddab9f7e6baafa91a1dc4&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771976539017319/image.gif?ex=67795d8c&is=67780c0c&hm=4414080922f59a91b5967d57dbe647f6ccbe1f3f21b33e2a6dcb7d02cc6253ee&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771984839544864/image.gif?ex=67795d8e&is=67780c0e&hm=89c5bbc11292f3722598d1f2facaa8ebc7cdaece1ff714e273e2329ddfc6386a&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772000450871459/image.gif?ex=67795d91&is=67780c11&hm=48e903b9d6367a637579b9d0e66e1ec19481ce188b8ba778242175474da61da0&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772019925155944/image.gif?ex=67795d96&is=67780c16&hm=b4d2475b72f451621bb69488013732ee7efe76d7129b33f563ce005505fa89c9&"
         ]
 
         if user is None:
@@ -648,24 +640,21 @@ async def pat(ctx, user: discord.Member = None):
             return
 
         gifs = [
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321012773861457951/download_2.gif?ex=676bb084&is=676a5f04&hm=90212c4ca0d5da1ad4f371c1538f741f67212d435e690cd494e5034caed6bd85&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321012773257216043/download_1.gif?ex=676bb084&is=676a5f04&hm=427e0eb8b0b0c72993f89bc00a5e5c73186b3d8cd0ed2b0e6bb916840c5b5a16&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321012772863213629/4c03bbe17bc0825e064d049c5f8262f3.gif?ex=676bb084&is=676a5f04&hm=f11bb17a6dcb192f4b8fd348fceae6f81687785542e1c1aaf0a9119c4eb464ae&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748318970220636/image.gif?ex=67794783&is=6777f603&hm=b9bf556e6e972ce88b4475f59f0fcf2d81f34b86219fca78342f322183b85659&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748324586393670/image.gif?ex=67794785&is=6777f605&hm=6daacb98433e5df9450e1f8a6238b70ca4a20cf2fbf6d2b2f90c647c5ff3e01f&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748337953509548/image.gif?ex=67794788&is=6777f608&hm=69fdedcdbbcf0cd3081e4a42647af1164d86e283a509fad03503cf7e1c1b28d1&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748346342248549/image.gif?ex=6779478a&is=6777f60a&hm=7d9713cd91fc4c34c66d5e25f0dee94c42923bb6c25d6e036bc1f76c5fcac686&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748352616927232/image.gif?ex=6779478b&is=6777f60b&hm=f7a7b0018a89f7b18384a3d214e06f47216852a7a25342c0d0d3b479d83cf989&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748357662539786/image.gif?ex=6779478d&is=6777f60d&hm=b05dc5910ffa86ae3cbc87c813b1e2ba79c3339bb6c290cf86ca972e505bdc55&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748362838315009/image.gif?ex=6779478e&is=6777f60e&hm=74498480a9706f021d8e0592f157d6205d4bf2b6d14ddca1cd89c87751f67699&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748368349761557/image.gif?ex=6779478f&is=6777f60f&hm=11dca7410e2894e12d53e4be1cb2bafbbb9740aa1a7f931c6b3d90de8c4dda61&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748377652596786/image.gif?ex=67794791&is=6777f611&hm=182a79d6ca25d94ef227dbe413026c1e98dc37c4395b64d7ec2fdc08f05d3b36&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748391460245504/image.gif?ex=67794795&is=6777f615&hm=db49fba6d41ed0d6ea4c6ea7a9d23c0e75771c4face86f20f27fd34ad49104d7&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748400398303273/image.gif?ex=67794797&is=6777f617&hm=09d96215e60211cc328cac85ce62cd30fa9efe3bf42b45ea47b204c5331025a7&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748406484111392/image.gif?ex=67794798&is=6777f618&hm=2957a774432062dc3b3ba0d03fbe6cad56a39bc70465c53daa4125f5763202d9&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748414424059904/image.gif?ex=6779479a&is=6777f61a&hm=0fc43d8dae8973167216b1f85893be06b11f285517dcb88c3ae7a1ec88f07e81&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748420862443693/image.gif?ex=6779479c&is=6777f61c&hm=c71f10c3d9907bb04dc82ecf4392c6dc1509997fbca07bc1524f16b6b132c08a&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324748431020785834/image.gif?ex=6779479e&is=6777f61e&hm=d77dd23a4cd72306c7bee1afeae720c8798346470bb84e20389be64ddf9cbbe3&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772507819180122/image.gif?ex=67795e0a&is=67780c8a&hm=fa170f3f50de030ea4bbdaf5264be8316a07654541a98ed4dea072ade3158bbe&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772513422512129/image.gif?ex=67795e0c&is=67780c8c&hm=dcb4df2828df0e3941fb6b0f797923b58cafe052cf85024571e5273a7c043dcc&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772530078220298/image.gif?ex=67795e10&is=67780c90&hm=019c4634030bf50e9090d24baa808c349b218a6aec7cbb89bef6e29b942d3d9f&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772541985980516/image.gif?ex=67795e13&is=67780c93&hm=cfba8199baf58c5e4b80622c6384685ec3847b96f2be7aefb81d6e1fcf310ea0&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772556972228628/image.gif?ex=67795e16&is=67780c96&hm=bac792f39170759e06d9511aea82e12bf7a93d0bfcaf5f01b94afb69a8ddfd60&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772562965626881/image.gif?ex=67795e18&is=67780c98&hm=8973cb089055e1ceb23ab7035593e62af35f7bbd415be074a9603be0a176adff&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772568061837382/image.gif?ex=67795e19&is=67780c99&hm=0a90ec4a1dc01daf95c73ad1d55e72a2df4d3be9f11c8c6dac5c0d4230bc2cbc&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772574348968028/image.gif?ex=67795e1a&is=67780c9a&hm=7e65b42b8603745019ce056bffce8b8b7d93529cb713b16131caeab58f94d769&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772583438028820/image.gif?ex=67795e1c&is=67780c9c&hm=940ebe3fd4b58114bea1c7109764b720ab7f1b90338b3ad574d9e2306484a5ce&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772599372320768/image.gif?ex=67795e20&is=67780ca0&hm=149ce92a1b00c56a44e5c571da0e798cd3080e6992521c40a9f29c1392559c76&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772619270225970/image.gif?ex=67795e25&is=67780ca5&hm=559866cc439f073a4d0bbaf2ab27b1ebdf7c7aeee0b157231e9091677af7db95&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772626169725071/image.gif?ex=67795e27&is=67780ca7&hm=d381c9220abb9f2e4d3d132aaeed88b06dafaae947afa9d15d66eb650590727d&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772644737777735/image.gif?ex=67795e2b&is=67780cab&hm=fcc8e6f273d5e8a5e125ff0c14a59f48b97459cabdaa5c10454bb03862e3d55f&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772660475068539/image.gif?ex=67795e2f&is=67780caf&hm=2f927ab44c5e580e83d81920bad55d3b50f648f39997814f1368cf3fc0a9b960&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324772670776020992/image.gif?ex=67795e31&is=67780cb1&hm=90a66e965ff5dad06d4a8d72a080d588637835ad2e4ac8f636e780c7edf59d25&"
         ]
 
         gif_to_send = random.choice(gifs)
@@ -686,28 +675,23 @@ async def slap(ctx, user: discord.Member = None):
             return
 
         gifs = [
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321011553759137854/mai-sakurajima-498-x-280-gif-p0x0f4wdxheprqeo.gif?ex=676baf61&is=676a5de1&hm=00c6bd27fee900cb8d3280eb4cb8467df9b88046e6eb6364244be2a10763412c&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321009658781110312/b6d8a83eb652a30b95e87cf96a21e007.gif?ex=676bad9d&is=676a5c1d&hm=ad8384cc58a0562e915f1283f95865a51de4c6f177b5fc8a570c98dbc9a1301a&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321009658391167026/anime-girl-slapping-funny-romance-cgvlonw265kjn0r6.gif?ex=676bad9d&is=676a5c1d&hm=8bf69dd790f63241932f3f248d65877d4851467c7902c8ac6620429115dcd712&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321090922250899527/petra.gif?ex=676bf94c&is=676aa7cc&hm=41372f38d6e358d776e7f96f123e1cb0da7eb7b9f595f439769a4f37f9f96c58&",
-            "https://cdn.discordapp.com/attachments/1320720271635906619/1321090923081236521/slap_rezero.gif?ex=676bf94c&is=676aa7cc&hm=7e807cfd404cbe7d14034f0496495afe8facc5ac32d0ec59bd9e9a21b8c58bc3&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749167418933248/image.gif?ex=6779484e&is=6777f6ce&hm=a2619b64ae8f099f9e37e5bdd12dd88681199647039fa935ba0e9c8575f14fed&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749173530034197/image.gif?ex=6779484f&is=6777f6cf&hm=3abecf320b6f9c2eb59874070c56c09609c452a7f1f2dc81a718c4617b23f01b&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749181981692025/image.gif?ex=67794851&is=6777f6d1&hm=f1f9ab18b1f8dedaa5be1da12b7c46c99ebd39ee4416e201f08ed94d30edf1f7&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749199572602930/image.gif?ex=67794855&is=6777f6d5&hm=82e2f903028438f4b634e0711af764ffe8d53d0f9b2293739cecd9dbebdeaa86&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749208648941659/image.gif?ex=67794857&is=6777f6d7&hm=8b9034da1ed17ff36d0042ba45495d9939d6dcf08c46f32ec50417e0d7047c5f&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749221458346025/image.gif?ex=6779485b&is=6777f6db&hm=1faec344082c3f05b4c77e95a568f0d688ca6828ee75dbafd629c400b2a0626f&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749233626021899/image.gif?ex=6779485d&is=6777f6dd&hm=4c1dec2ae061a0a0a131196b189129d59b8516e2339f3bf16a828297330a1f74&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749255843381268/image.gif?ex=67794863&is=6777f6e3&hm=eaf8f7752ee04962816c1174bb77b6131ede584d5b53c602b9cf38931e32e35c&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749270087368714/image.gif?ex=67794866&is=6777f6e6&hm=b0a49826e9ed705c9328ae0e692625065110dc2feb466bb2dce13cf922bb4c7e&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749284897456188/image.gif?ex=6779486a&is=6777f6ea&hm=52225b6a280fcd462892d3c219671a6f269e647e5e8828a6b922669181647684&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749292644208724/image.gif?ex=6779486c&is=6777f6ec&hm=5205c8451a11542f1525f05cbc3b72eabee89690a79c5750483973395e3d066c&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749306183422044/image.gif?ex=6779486f&is=6777f6ef&hm=abd94dc2f65bfb094920084665b2cbb7a6eb2212293273d6be21ed797947e9f8&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749332557070429/image.gif?ex=67794875&is=6777f6f5&hm=6694a92d679eadc6e9db5ecfe337b1f6c839c9d8e489937092511f30afe74bc7&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749343147687956/image.gif?ex=67794878&is=6777f6f8&hm=ad68e06791a1db364da114c6793e4a382d0fbf6169fcee268c80cd70943a8edf&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749350580125747/image.gif?ex=67794879&is=6777f6f9&hm=43eebc3e0f330e40b11b1ff99969f9fe93b7d7fd2d18c2bc6fb498a6d5b3b5d1&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749356611534869/image.gif?ex=6779487b&is=6777f6fb&hm=f65a20d94a8ad7717a7af1f3a50a77f499f4d0c644692b9f1fc81340cd1eeb02&",
-            "https://cdn.discordapp.com/attachments/1320720273393061950/1324749364723449876/image.gif?ex=6779487d&is=6777f6fd&hm=987104132b85197bb75c5c940ffb68a52ad6eeb75aef07b99af940c99013d4b1&"
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771426766688388/image.gif?ex=67795d09&is=67780b89&hm=3d328d60eef10d1533067ad858b816902398f053ac95d66e886ea35f461f92d4&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771433834086422/image.gif?ex=67795d0a&is=67780b8a&hm=b855a242df3fa6c8aa2eef26d29283b85199ae8b2d3e64de365c26c4aea4dcca&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771442688131133/image.gif?ex=67795d0d&is=67780b8d&hm=4211fa279bd6c68158b50022a3a0a93d3d2f7d61cdf1b6a8b2343e8b354faee8&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771450519031948/image.gif?ex=67795d0e&is=67780b8e&hm=17013a12e963441352302a6f526188a05b56ee9bb8e6ef1c6f873b46c567711e&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771459851223083/image.gif?ex=67795d11&is=67780b91&hm=b797097f1ee28989c6fc38c3719adb5eb4b8567de3c133617eaf168bffef85e0&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771477941387324/image.gif?ex=67795d15&is=67780b95&hm=6905ea14ea2b5ddb20ded1b000602c4faf48ec2eebc5027c8714cb22d31760e9&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771487093100554/image.gif?ex=67795d17&is=67780b97&hm=c45bf15f8bfcadc38f45aa523ab3f9beab50ea2cb851a644e6c4f301083310bc&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771497432055808/image.gif?ex=67795d1a&is=67780b9a&hm=81ef14368ca83e5ea503fa4e40b2f80e23c7a68c91a46e809fce883d57470466&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771522795147420/image.gif?ex=67795d20&is=67780ba0&hm=d3c08b4ff26ba19c582b2da8f86ec75538daa5e8eb88830d7334f7076db85d47&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771537324081222/image.gif?ex=67795d23&is=67780ba3&hm=7f1b1dc0829d518b46cd314a83ebfb87704bec793715b4bfb7a2574415442fb4&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771545314365490/image.gif?ex=67795d25&is=67780ba5&hm=1b4b97402f29c36c7f6641c758fe2cd16a9b162e4f1471cf3b59ae9b7ffa029e&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771559130534013/image.gif?ex=67795d28&is=67780ba8&hm=f8d9c49d917e70d3106975429b892dda7cf4d5366fdb7b58a9a476c6e1952cd4&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771567342850048/image.gif?ex=67795d2a&is=67780baa&hm=84cd9cebb5455cda3b5d2c719bf05bf10cb73c526014ebe592609ad0d0ef6a04&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771574137487490/image.gif?ex=67795d2c&is=67780bac&hm=3811377a5677ff6b6e08440ddb9ea44ddebd8a24a0d59d324400e90b019ec7ef&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771581624582244/image.gif?ex=67795d2e&is=67780bae&hm=6b4beb06ccb7cff35fad1b8a79618b872b599848fac22a924e169d40d75c99a0&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771587798601738/image.gif?ex=67795d2f&is=67780baf&hm=aea83491710e75791a7df2c4528f49e7ae570a9f7bc76727608b5f9ad4f435db&",
+            "https://cdn.discordapp.com/attachments/1324770554187616347/1324771595943677963/image.gif?ex=67795d31&is=67780bb1&hm=abe6f3ba95f91af73af08eed8bcc5463cef9fdc98f4b6c56bc370ac2f7b8e107&"
         ]
 
         gif_to_send = random.choice(gifs)
